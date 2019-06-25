@@ -8,10 +8,13 @@ import org.springframework.stereotype.Component;
 import com.kodekonveyor.cdd.ContractInfo;
 import com.kodekonveyor.cdd.annotations.Contract;
 import com.kodekonveyor.cdd.annotations.Subject;
-import com.kodekonveyor.cdd.annotations.TestData;;
+import com.kodekonveyor.cdd.annotations.TestData;
+
+import lombok.EqualsAndHashCode;;
 
 @SpringBootTest
 @Component
+@EqualsAndHashCode
 public class TestContract {
 
   @Subject
@@ -20,7 +23,7 @@ public class TestContract {
 
   @TestData
   @Autowired
-  public TestArtifactDataFactory testdataFactory;
+  public Data testdataFactory;
 
   @SpringBootApplication
   static class TestConfiguration {

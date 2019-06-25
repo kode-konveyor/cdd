@@ -13,8 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.stereotype.Service;
 
+import com.kodekonveyor.cdd.ContractCreationService;
 import com.kodekonveyor.cdd.ContractInfo;
 import com.kodekonveyor.cdd.RunnerDataCreationService;
+import com.kodekonveyor.cdd.Specimen;
 import com.kodekonveyor.cdd.annotations.Contract;
 import com.kodekonveyor.cdd.annotations.Sample;
 import com.kodekonveyor.cdd.annotations.Subject;
@@ -50,14 +52,14 @@ public class RunnerDataCreationServiceImpl<ServiceClass>
     ContractRunnerData<ServiceClass> data = new ContractRunnerData<>();
     data.setTestClass(testClass);
 
-    Object testInstance = testClass.getConstructor().newInstance();
-    beanFactory.autowireBean(testInstance);
+    Object testInstance = beanFactory.createBean(testClass);
     data.setTestInstance(testInstance);
-    DataFactory dataFactory =
-        (DataFactory) fieldGetterService.getFieldWithAnnotation(
-            TestData.class, data.getTestInstance()
+    Specimen testData =
+        (Specimen) fieldGetterService.getFieldWithAnnotation(
+            TestData.class, testInstance
         );
-    data.setTestData(dataFactory.createTestData());
+    testData.init();
+    data.setTestData(testData);
     setServiceInstanceFrom(data, myAnswer);
     setMockFrom(data);
     data.setContracts(createContracts(data));
@@ -83,6 +85,7 @@ public class RunnerDataCreationServiceImpl<ServiceClass>
         (ServiceClass) fieldGetterService.getFieldWithAnnotation(
             Subject.class, testInstance
         );
+
     if (null == serviceInstance)
       serviceInstance = (ServiceClass) myAnswer;
     if (null == serviceInstance)
@@ -100,10 +103,13 @@ public class RunnerDataCreationServiceImpl<ServiceClass>
       Sample annotation = method.getAnnotation(Sample.class);
       if (null != annotation)
         try {
+
           instance =
               (ServiceClass) method.invoke(testInstance, data.getTestData());
         } catch (InvocationTargetException e) {
           throw e.getCause();
+        } catch (IllegalAccessException | IllegalArgumentException e) {
+          e.printStackTrace();
         }
     }
     return instance;

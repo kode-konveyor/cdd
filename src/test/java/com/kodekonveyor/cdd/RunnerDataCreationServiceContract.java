@@ -7,6 +7,7 @@ import com.kodekonveyor.cdd.annotations.Contract;
 import com.kodekonveyor.cdd.annotations.Subject;
 import com.kodekonveyor.cdd.annotations.TestData;
 import com.kodekonveyor.cdd.dto.ContractRunnerData;
+import com.kodekonveyor.cdd.dto.ContractRunnerDataContract;
 import com.kodekonveyor.cdd.impl.RunnerDataCreationServiceImpl;
 import com.kodekonveyor.cdd.testartifacts.ExampleService;
 
@@ -20,7 +21,7 @@ public class RunnerDataCreationServiceContract {
 
   @TestData
   @Autowired
-  public TestDataFactory testdataFactory;
+  public ContractTestData contractTestData;
 
   @Contract(
     "makeRunnerDataFromTestClass creates the data needed for the runner"

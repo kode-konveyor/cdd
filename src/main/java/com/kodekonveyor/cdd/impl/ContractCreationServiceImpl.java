@@ -6,12 +6,15 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.kodekonveyor.cdd.ContractCreationService;
 import com.kodekonveyor.cdd.ContractInfo;
 import com.kodekonveyor.cdd.dto.ContractRunnerData;
 
 @Service
-public class ContractCreationService<ServiceClass> {
+public class ContractCreationServiceImpl<ServiceClass>
+    implements ContractCreationService<ServiceClass> {
 
+  @Override
   public void createContract(
       final List<ContractInfo<ServiceClass>> contracts, final Method method,
       ContractRunnerData<ServiceClass> data

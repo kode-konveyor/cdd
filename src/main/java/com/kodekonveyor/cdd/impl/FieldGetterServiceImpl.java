@@ -10,6 +10,7 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.stereotype.Service;
 
 import com.kodekonveyor.cdd.FieldGetterService;
+import com.kodekonveyor.cdd.annotations.TestData;
 
 @Service
 public class FieldGetterServiceImpl
@@ -34,7 +35,10 @@ public class FieldGetterServiceImpl
         theField = field;
     }
     if (theField == null)
-      throw new IllegalArgumentException(NO_SUBJECT + annotationClass);
+      if (annotationClass == TestData.class)
+        throw new IllegalArgumentException(NO_SUBJECT + annotationClass);
+      else
+        return null;
     return getServiceInstance(theField, testInstance);
   }
 

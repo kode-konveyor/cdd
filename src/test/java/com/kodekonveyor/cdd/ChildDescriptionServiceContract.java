@@ -22,7 +22,7 @@ public class ChildDescriptionServiceContract {
 
   @TestData
   @Autowired
-  public TestDataFactory testdataFactory;
+  public ContractTestData contractTestData;
 
   @SpringBootApplication
   static class TestConfiguration {

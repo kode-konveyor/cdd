@@ -30,17 +30,18 @@ public class ContractRunnerServiceImpl<ServiceClass>
       final ContractInfo<ServiceClass> contract, final RunNotifier notifier,
       ContractRunnerData<ServiceClass> data
   ) {
-    runChildWithResult(contract, notifier, data);
+    final Description description =
+        childDescriptionService.describeChild(contract, data);
+    notifier.fireTestStarted(description);
+    runChildWithResult(contract, notifier, data, description);
+    notifier.fireTestFinished(description);
   }
 
   private boolean runChildWithResult(
       final ContractInfo<ServiceClass> contract, final RunNotifier notifier,
-      ContractRunnerData<ServiceClass> data
+      ContractRunnerData<ServiceClass> data, Description description
   ) {
 
-    final Description description =
-        childDescriptionService.describeChild(contract, data);
-    notifier.fireTestStarted(description);
     if (contract.getExceptionClass() == null)
       return testReturningContract(contract, notifier, description);
     else
@@ -74,7 +75,6 @@ public class ContractRunnerServiceImpl<ServiceClass>
         return false;
       }
     }
-    notifier.fireTestFinished(description);
     return true;
   }
 
@@ -90,15 +90,12 @@ public class ContractRunnerServiceImpl<ServiceClass>
       answer = stubbing.answer(invocation);
     } catch (final Throwable thrown) {
       notifier.fireTestFailure(new Failure(description, thrown));
-      notifier.fireTestFinished(description);
       return false;
     }
 
     boolean isPassed = runOneReturningContract(
         contract, notifier, description, invocation, answer
     );
-    if (isPassed)
-      notifier.fireTestFinished(description);
     return isPassed;
   }
 
@@ -107,7 +104,6 @@ public class ContractRunnerServiceImpl<ServiceClass>
       final Description description, final Invocation invocation,
       final Object answer
   ) {
-    System.out.println("runOneReturningContract " + invocation);
     Object result;
     try {
       Object[] arguments = invocation.getArguments();
@@ -117,17 +113,13 @@ public class ContractRunnerServiceImpl<ServiceClass>
 
     } catch (final Throwable thrown) {
       notifier.fireTestFailure(new Failure(description, thrown));
-      notifier.fireTestFinished(description);
       return false;
     }
     Class<? extends Object> contracts = contract.getReturnValueContracts();
-    System.out.println("answer:" + answer);
     if (null != contracts) {
-      System.out.println("contract:" + contracts);
-      runAssertionsOnValue(answer, contract, notifier, description, contracts);
-      //runAssertionsOnValue(result, contract, notifier, description, contracts);
+      runAssertionsOnValue(result, contract, notifier, description, contracts);
     } else {
-      if (!contract.getEqualityPredicate().equals(answer, result)) {
+      if (!equals(answer, result)) {
         System.out.println(answer + "<->" + result);
         notifier.fireTestFailure(
             new Failure(
@@ -156,8 +148,8 @@ public class ContractRunnerServiceImpl<ServiceClass>
       return;
     }
     for (ContractInfo<ServiceClass> theContract : theData.getContracts()) {
-      boolean passed = runChildWithResult(theContract, notifier, theData);
-      System.out.println("passed: " + passed);
+      boolean passed =
+          runChildWithResult(theContract, notifier, theData, description);
       if (!passed)
         return;
     }
