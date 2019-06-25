@@ -1,5 +1,8 @@
-package com.kodekonveyor.cdd;
+package com.kodekonveyor.cdd.testartifacts;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class ExampleService {
 
   public Integer testedMethod(Integer parameter) {

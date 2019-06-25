@@ -5,7 +5,6 @@ import java.util.List;
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.ParentRunner;
-import org.junit.runners.model.InitializationError;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -24,7 +23,7 @@ public class ContractRunner<ServiceClass>
   private ContractRunnerData<ServiceClass> data;
 
   public ContractRunner(final Class<? extends Object> testClass)
-      throws ReflectiveOperationException, InitializationError {
+      throws Throwable {
     super(testClass);
     loadDependencies();
     data = runnerDataCreationService.makeRunnerDataFromTestClass(testClass);

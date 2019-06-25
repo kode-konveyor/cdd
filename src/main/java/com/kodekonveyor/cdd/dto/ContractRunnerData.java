@@ -19,5 +19,6 @@ public class ContractRunnerData<ServiceClass> {
   private Description suiteDescription;
   private List<ContractInfo<ServiceClass>> contracts;
   private Object testData;
+  private ServiceClass mock;
 
 }

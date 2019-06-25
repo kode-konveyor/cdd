@@ -1,14 +1,14 @@
 package com.kodekonveyor.cdd;
 
-import java.lang.reflect.InvocationTargetException;
+import org.springframework.stereotype.Service;
 
 import com.kodekonveyor.cdd.dto.ContractRunnerData;
 
+@Service
 public interface RunnerDataCreationService<ServiceClass> {
 
   ContractRunnerData<ServiceClass>
       makeRunnerDataFromTestClass(Class<? extends Object> testClass)
-          throws InstantiationException, IllegalAccessException,
-          InvocationTargetException, NoSuchMethodException;
+          throws Throwable;
 
 }

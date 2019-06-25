@@ -5,22 +5,27 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.stereotype.Service;
 
 import com.kodekonveyor.cdd.FieldGetterService;
 
 @Service
-public class FieldGetterServiceImpl<ServiceClass>
-    implements FieldGetterService<ServiceClass> {
+public class FieldGetterServiceImpl
+    implements FieldGetterService {
+
+  @Autowired
+  private AutowireCapableBeanFactory beanFactory;
 
   public FieldGetterServiceImpl() {
     super();
   }
 
   @Override
-  public <T extends Annotation> ServiceClass getFieldWithAnnotation(
+  public <T extends Annotation> Object getFieldWithAnnotation(
       Class<T> annotationClass, Object testInstance
-  ) throws IllegalAccessException {
+  ) throws IllegalArgumentException, IllegalAccessException {
     Field theField = null;
     for (final Field field : testInstance.getClass().getFields()) {
       final List<T> annotations =
@@ -39,12 +44,15 @@ public class FieldGetterServiceImpl<ServiceClass>
         .asList(field.getDeclaredAnnotationsByType(annotationClass));
   }
 
-  @SuppressWarnings("unchecked")
-  private ServiceClass
-      getServiceInstance(final Field field, Object testInstance)
-          throws IllegalAccessException {
+  private Object
+      getServiceInstance(
+          final Field field, Object testInstance
+      ) throws IllegalArgumentException, IllegalAccessException {
 
-    return (ServiceClass) field.get(testInstance);
+    Object instance = field.get(testInstance);
+    if (null != instance)
+      beanFactory.autowireBean(instance);
+    return instance;
   }
 
 }

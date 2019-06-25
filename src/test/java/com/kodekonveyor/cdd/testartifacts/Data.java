@@ -1,4 +1,4 @@
-package com.kodekonveyor.cdd;
+package com.kodekonveyor.cdd.testartifacts;
 
 public class Data {
 
