@@ -32,23 +32,23 @@ public class ContractRunnerServiceImpl<ServiceClass>
   ) {
     final Description description =
         childDescriptionService.describeChild(contract, data);
+    data.getTestInstance();
     notifier.fireTestStarted(description);
     runChildWithResult(contract, notifier, data, description);
     notifier.fireTestFinished(description);
   }
 
-  private boolean runChildWithResult(
+  private void runChildWithResult(
       final ContractInfo<ServiceClass> contract, final RunNotifier notifier,
       ContractRunnerData<ServiceClass> data, Description description
   ) {
-
     if (contract.getExceptionClass() == null)
-      return testReturningContract(contract, notifier, description);
+      testReturningContract(contract, notifier, description);
     else
-      return testThrowingContract(contract, notifier, description);
+      testThrowingContract(contract, notifier, description);
   }
 
-  private boolean testThrowingContract(
+  private void testThrowingContract(
       final ContractInfo<?> contract, final RunNotifier notifier,
       final Description description
   ) {
@@ -62,7 +62,6 @@ public class ContractRunnerServiceImpl<ServiceClass>
       notifier.fireTestFailure(
           new Failure(description, new AssertionError("Expected exception "))
       );
-      return false;
     } catch (final Throwable thrown) {
       if (
         !(thrown.getClass().equals(contract.getExceptionClass()) &&
@@ -72,14 +71,12 @@ public class ContractRunnerServiceImpl<ServiceClass>
         notifier.fireTestFailure(
             new Failure(description, new AssertionError("Bad exception "))
         );
-        return false;
       }
     }
-    return true;
   }
 
-  private boolean testReturningContract(
-      final ContractInfo<?> contract, final RunNotifier notifier,
+  private void testReturningContract(
+      final ContractInfo<ServiceClass> contract, final RunNotifier notifier,
       final Description description
   ) {
     final Stubbing stubbing =
@@ -90,17 +87,16 @@ public class ContractRunnerServiceImpl<ServiceClass>
       answer = stubbing.answer(invocation);
     } catch (final Throwable thrown) {
       notifier.fireTestFailure(new Failure(description, thrown));
-      return false;
+      return;
     }
 
-    boolean isPassed = runOneReturningContract(
+    runOneReturningContract(
         contract, notifier, description, invocation, answer
     );
-    return isPassed;
   }
 
-  private boolean runOneReturningContract(
-      final ContractInfo<?> contract, final RunNotifier notifier,
+  private void runOneReturningContract(
+      final ContractInfo<ServiceClass> contract, final RunNotifier notifier,
       final Description description, final Invocation invocation,
       final Object answer
   ) {
@@ -108,50 +104,24 @@ public class ContractRunnerServiceImpl<ServiceClass>
     try {
       Object[] arguments = invocation.getArguments();
       Method method = invocation.getMethod();
-      Object serviceInstance = contract.getSuiteData().getServiceInstance();
+      ServiceClass serviceInstance =
+          contract.getSuiteData().getServiceInstance();
       result = method.invoke(serviceInstance, arguments);
 
     } catch (final Throwable thrown) {
       notifier.fireTestFailure(new Failure(description, thrown));
-      return false;
-    }
-    Class<? extends Object> contracts = contract.getReturnValueContracts();
-    if (null != contracts) {
-      runAssertionsOnValue(result, contract, notifier, description, contracts);
-    } else {
-      if (!equals(answer, result)) {
-        System.out.println(answer + "<->" + result);
-        notifier.fireTestFailure(
-            new Failure(
-                description,
-                new AssertionError(
-                    "Bad return,expected " + answer + " got " + result
-                )
-            )
-        );
-        return false;
-      }
-    }
-    return true;
-  }
-
-  private void runAssertionsOnValue(
-      Object answer, ContractInfo<?> parentContract, RunNotifier notifier,
-      Description description, Class<? extends Object> contracts
-  ) {
-    ContractRunnerData<ServiceClass> theData;
-    try {
-      theData = runnerDataCreationServiceImpl
-          .makeRunnerDataFromTestClass(contracts, answer);
-    } catch (Throwable e) {
-      notifier.fireTestFailure(new Failure(description, e));
       return;
     }
-    for (ContractInfo<ServiceClass> theContract : theData.getContracts()) {
-      boolean passed =
-          runChildWithResult(theContract, notifier, theData, description);
-      if (!passed)
-        return;
+    if (!equals(answer, result)) {
+      notifier.fireTestFailure(
+          new Failure(
+              description,
+              new AssertionError(
+                  "Bad return,expected " + answer + " got " + result
+              )
+          )
+      );
+      return;
     }
   }
 

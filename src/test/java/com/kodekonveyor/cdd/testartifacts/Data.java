@@ -2,13 +2,11 @@ package com.kodekonveyor.cdd.testartifacts;
 
 import org.springframework.stereotype.Component;
 
-import com.kodekonveyor.cdd.Specimen;
-
 import lombok.EqualsAndHashCode;
 
 @Component
 @EqualsAndHashCode
-public class Data implements Specimen {
+public class Data {
 
   public static final Class<? extends RuntimeException> exceptionThrown =
       IllegalArgumentException.class;
@@ -23,9 +21,5 @@ public class Data implements Specimen {
       "bad parameter: " + parameterInducingException;
   public final String noteExistingExceptionMessage =
       "good parameter";
-
-  @Override
-  public void init() {
-  }
 
 }

@@ -1,8 +1,6 @@
 package com.kodekonveyor.cdd.impl;
 
-import static org.mockito.Mockito.mock;
-
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,11 +14,9 @@ import org.springframework.stereotype.Service;
 import com.kodekonveyor.cdd.ContractCreationService;
 import com.kodekonveyor.cdd.ContractInfo;
 import com.kodekonveyor.cdd.RunnerDataCreationService;
-import com.kodekonveyor.cdd.Specimen;
 import com.kodekonveyor.cdd.annotations.Contract;
-import com.kodekonveyor.cdd.annotations.Sample;
+import com.kodekonveyor.cdd.annotations.ContractFactory;
 import com.kodekonveyor.cdd.annotations.Subject;
-import com.kodekonveyor.cdd.annotations.TestData;
 import com.kodekonveyor.cdd.dto.ContractRunnerData;
 
 @Service
@@ -51,17 +47,17 @@ public class RunnerDataCreationServiceImpl<ServiceClass>
   ) throws Throwable {
     ContractRunnerData<ServiceClass> data = new ContractRunnerData<>();
     data.setTestClass(testClass);
-
     Object testInstance = beanFactory.createBean(testClass);
+    if (null == testInstance)
+      throw new AssertionError("NO TEST INSTANCE of " + testClass);
+
+    setServiceInstance(data, testInstance);
     data.setTestInstance(testInstance);
-    Specimen testData =
-        (Specimen) fieldGetterService.getFieldWithAnnotation(
-            TestData.class, testInstance
-        );
-    testData.init();
-    data.setTestData(testData);
-    setServiceInstanceFrom(data, myAnswer);
-    setMockFrom(data);
+    Field itField = fieldGetterService
+        .getFieldWithAnnotation(ContractFactory.class, testInstance);
+    if (null == itField)
+      throw new AssertionError("NO IT FIELD in " + testInstance);
+    data.setItField(itField);
     data.setContracts(createContracts(data));
     data.setSuiteDescription(Description.createSuiteDescription(testClass));
     for (final ContractInfo<ServiceClass> child : data.getContracts())
@@ -71,48 +67,13 @@ public class RunnerDataCreationServiceImpl<ServiceClass>
   }
 
   @SuppressWarnings("unchecked")
-  private void setMockFrom(ContractRunnerData<ServiceClass> data) {
-    data.setMock((ServiceClass) mock(data.getServiceInstance().getClass()));
-  }
-
-  @SuppressWarnings("unchecked")
-  private void setServiceInstanceFrom(
-      ContractRunnerData<ServiceClass> data, Object myAnswer
-  )
-      throws Throwable {
-    Object testInstance = data.getTestInstance();
-    ServiceClass serviceInstance =
-        (ServiceClass) fieldGetterService.getFieldWithAnnotation(
-            Subject.class, testInstance
-        );
-
-    if (null == serviceInstance)
-      serviceInstance = (ServiceClass) myAnswer;
-    if (null == serviceInstance)
-      serviceInstance = createServiceInstanceWithGetSample(data);
-    data.setServiceInstance(serviceInstance);
-  }
-
-  @SuppressWarnings("unchecked")
-  private ServiceClass createServiceInstanceWithGetSample(
-      ContractRunnerData<ServiceClass> data
-  ) throws Throwable {
-    Object testInstance = data.getTestInstance();
-    ServiceClass instance = null;
-    for (Method method : testInstance.getClass().getMethods()) {
-      Sample annotation = method.getAnnotation(Sample.class);
-      if (null != annotation)
-        try {
-
-          instance =
-              (ServiceClass) method.invoke(testInstance, data.getTestData());
-        } catch (InvocationTargetException e) {
-          throw e.getCause();
-        } catch (IllegalAccessException | IllegalArgumentException e) {
-          e.printStackTrace();
-        }
-    }
-    return instance;
+  private void setServiceInstance(
+      ContractRunnerData<ServiceClass> data, Object testInstance
+  ) throws IllegalAccessException {
+    data.setServiceInstance(
+        (ServiceClass) fieldGetterService
+            .getFieldValueWithAnnotation(Subject.class, testInstance)
+    );
   }
 
   private List<ContractInfo<ServiceClass>>

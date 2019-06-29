@@ -4,12 +4,11 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kodekonveyor.cdd.annotations.Contract;
+import com.kodekonveyor.cdd.annotations.ContractFactory;
 import com.kodekonveyor.cdd.annotations.Subject;
-import com.kodekonveyor.cdd.annotations.TestData;
-import com.kodekonveyor.cdd.dto.ContractRunnerData;
-import com.kodekonveyor.cdd.dto.ContractRunnerDataContract;
 import com.kodekonveyor.cdd.impl.RunnerDataCreationServiceImpl;
 import com.kodekonveyor.cdd.testartifacts.ExampleService;
+import com.kodekonveyor.cdd.testdata.ContractTestData;
 
 @RunWith(ContractRunner.class)
 public class RunnerDataCreationServiceContract {
@@ -19,21 +18,19 @@ public class RunnerDataCreationServiceContract {
   public RunnerDataCreationServiceImpl<
       ExampleService> runnerDataCreationServiceImpl;
 
-  @TestData
+  @ContractFactory
+  public ContractInfo<RunnerDataCreationService<ExampleService>> it;
+
   @Autowired
-  public ContractTestData contractTestData;
+  public ContractTestData testData;
 
   @Contract(
     "makeRunnerDataFromTestClass creates the data needed for the runner"
   )
-  public void makeRunnerDataFromTestClass_good_values(
-      final ContractTestData testData,
-      final ContractInfo<RunnerDataCreationService<ExampleService>> contract
-  ) throws Throwable {
-    ContractRunnerData<ExampleService> returnValue =
-        testData.contractRunnerData;
-
-    contract.returns(returnValue, ContractRunnerDataContract.class)
-        .makeRunnerDataFromTestClass(testData.testInstance.getClass());
+  public void makeRunnerDataFromTestClass_good_values() throws Throwable {
+    it.returns(testData.contractRunnerData)
+        .makeRunnerDataFromTestClass(
+            testData.contractInstance.getClass()
+        );
   }
 }

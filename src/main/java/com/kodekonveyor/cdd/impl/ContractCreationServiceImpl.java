@@ -1,5 +1,6 @@
 package com.kodekonveyor.cdd.impl;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -20,15 +21,21 @@ public class ContractCreationServiceImpl<ServiceClass>
       ContractRunnerData<ServiceClass> data
   ) throws AssertionError, Throwable {
     Object testInstance = data.getTestInstance();
-    Object testData = data.getTestData();
-    ContractInfo<ServiceClass> contractInfo =
-        new ContractInfo<ServiceClass>(data.getMock());
     final ContractInfo<ServiceClass> contract =
-        contractInfo;
+        new ContractInfo<ServiceClass>(data.getServiceInstance());
     contract.setSuiteData(data);
     contract.setDefiningFunction(method.getName());
+    Field itField = data.getItField();
+    if (null == itField)
+      throw new AssertionError("NO IT FIELD");
     try {
-      method.invoke(testInstance, testData, contract);
+      itField.set(testInstance, contract);
+    } catch (IllegalArgumentException | IllegalAccessException e) {
+      throw new AssertionError(e);
+    }
+
+    try {
+      method.invoke(testInstance);
     } catch (
         IllegalAccessException | IllegalArgumentException e
     ) {

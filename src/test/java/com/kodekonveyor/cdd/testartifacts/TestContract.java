@@ -1,44 +1,37 @@
 package com.kodekonveyor.cdd.testartifacts;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.stereotype.Component;
 
 import com.kodekonveyor.cdd.ContractInfo;
 import com.kodekonveyor.cdd.annotations.Contract;
-import com.kodekonveyor.cdd.annotations.Subject;
-import com.kodekonveyor.cdd.annotations.TestData;
+import com.kodekonveyor.cdd.annotations.ContractFactory;
+import com.kodekonveyor.cdd.annotations.Subject;;
 
-import lombok.EqualsAndHashCode;;
-
-@SpringBootTest
-@Component
-@EqualsAndHashCode
 public class TestContract {
 
   @Subject
   @Autowired
   public ExampleService service;
 
-  @TestData
   @Autowired
-  public Data testdataFactory;
+  Data testData;
 
-  @SpringBootApplication
-  static class TestConfiguration {
-  }
+  @ContractFactory
+  public ContractInfo<ExampleService> it;
 
   @Contract("a contract with return definition")
-  public void contract_passing_return(
-      final Data testData,
-      final ContractInfo<ExampleService> contract
-  ) {
+  public void contract_passing_return() {
 
-    contract.returns(
+    it.returns(
         testData.goodReturnValue
     )
         .testedMethod(testData.goodParameter);
   }
 
+  @Override
+  public boolean equals(Object other) {
+    if (other == null)
+      return false;
+    return other.getClass().equals(this.getClass());
+  }
 }

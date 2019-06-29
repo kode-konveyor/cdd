@@ -7,6 +7,7 @@ import static org.mockito.Mockito.mock;
 import java.lang.reflect.InvocationTargetException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.kodekonveyor.cdd.dto.ContractRunnerData;
 import com.kodekonveyor.cdd.impl.RunnerDataCreationServiceImpl;
@@ -19,6 +20,7 @@ import lombok.ToString;
 @Getter
 @ToString
 @EqualsAndHashCode
+@Component
 public class ContractInfo<ServiceClass> {
 
   @Autowired
@@ -31,6 +33,8 @@ public class ContractInfo<ServiceClass> {
   private String exceptionMessage;
   @Setter
   private String definingFunction;
+  @EqualsAndHashCode.Exclude
+  @ToString.Exclude
   @Setter
   private ContractRunnerData<ServiceClass> suiteData;
 
@@ -41,24 +45,11 @@ public class ContractInfo<ServiceClass> {
   }
 
   @SuppressWarnings("unchecked")
-  ContractInfo() {
-    service = (ServiceClass) this;
-  }
-
-  @SuppressWarnings("unchecked")
   public ServiceClass
       returns(final Object returnValue) {
     this.returnValue = returnValue;
     stub = doReturn(returnValue).when(mock(service.getClass()));
     return (ServiceClass) stub;
-  }
-
-  public ServiceClass returns(
-      Object returnValue,
-      Class<? extends Object> contractForReturnValue
-  ) throws Throwable {
-    this.returnValueContracts = contractForReturnValue;
-    return returns(returnValue);
   }
 
   @SuppressWarnings("unchecked")
@@ -79,7 +70,6 @@ public class ContractInfo<ServiceClass> {
         IllegalArgumentException | InvocationTargetException |
         NoSuchMethodException | SecurityException e
     ) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
     return (ServiceClass) stub;

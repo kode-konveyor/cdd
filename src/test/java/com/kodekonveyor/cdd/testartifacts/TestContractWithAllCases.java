@@ -1,28 +1,19 @@
 package com.kodekonveyor.cdd.testartifacts;
 
 import org.mockito.InjectMocks;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import com.kodekonveyor.cdd.ContractInfo;
 import com.kodekonveyor.cdd.annotations.Contract;
-import com.kodekonveyor.cdd.annotations.Subject;
-import com.kodekonveyor.cdd.annotations.TestData;;
+import com.kodekonveyor.cdd.annotations.Subject;;
 
-@SpringBootTest
 public class TestContractWithAllCases {
 
   @Subject
   @InjectMocks
   public ExampleService service;
 
-  @TestData
   @InjectMocks
   public Data testdata;
-
-  @SpringBootApplication
-  static class TestConfiguration {
-  }
 
   @Contract("a contract with return definition")
   public void contract_passing_return(

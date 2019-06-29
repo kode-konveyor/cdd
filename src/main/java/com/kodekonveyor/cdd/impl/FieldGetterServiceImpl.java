@@ -10,7 +10,6 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.stereotype.Service;
 
 import com.kodekonveyor.cdd.FieldGetterService;
-import com.kodekonveyor.cdd.annotations.TestData;
 
 @Service
 public class FieldGetterServiceImpl
@@ -24,22 +23,26 @@ public class FieldGetterServiceImpl
   }
 
   @Override
-  public <T extends Annotation> Object getFieldWithAnnotation(
+  public <T extends Annotation> Object getFieldValueWithAnnotation(
       Class<T> annotationClass, Object testInstance
   ) throws IllegalArgumentException, IllegalAccessException {
+    Field theField = getFieldWithAnnotation(annotationClass, testInstance);
+    if (theField == null)
+      return null;
+    return getServiceInstance(theField, testInstance);
+  }
+
+  public <T extends Annotation> Field
+      getFieldWithAnnotation(Class<T> annotationClass, Object testInstance) {
     Field theField = null;
     for (final Field field : testInstance.getClass().getFields()) {
+
       final List<T> annotations =
           getAnnotationsFor(field, annotationClass);
       if (!annotations.isEmpty())
         theField = field;
     }
-    if (theField == null)
-      if (annotationClass == TestData.class)
-        throw new IllegalArgumentException(NO_SUBJECT + annotationClass);
-      else
-        return null;
-    return getServiceInstance(theField, testInstance);
+    return theField;
   }
 
   private <T extends Annotation> List<T>
