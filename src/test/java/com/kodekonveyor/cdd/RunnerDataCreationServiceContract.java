@@ -3,8 +3,8 @@ package com.kodekonveyor.cdd;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.kodekonveyor.cdd.annotations.Contract;
 import com.kodekonveyor.cdd.annotations.ContractFactory;
+import com.kodekonveyor.cdd.annotations.ContractRule;
 import com.kodekonveyor.cdd.annotations.Subject;
 import com.kodekonveyor.cdd.impl.RunnerDataCreationServiceImpl;
 import com.kodekonveyor.cdd.testartifacts.ExampleService;
@@ -24,7 +24,7 @@ public class RunnerDataCreationServiceContract {
   @Autowired
   public ContractTestData testData;
 
-  @Contract(
+  @ContractRule(
     "makeRunnerDataFromTestClass creates the data needed for the runner"
   )
   public void makeRunnerDataFromTestClass_good_values() throws Throwable {

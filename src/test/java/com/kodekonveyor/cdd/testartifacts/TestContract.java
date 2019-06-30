@@ -1,12 +1,14 @@
 package com.kodekonveyor.cdd.testartifacts;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.kodekonveyor.cdd.ContractInfo;
-import com.kodekonveyor.cdd.annotations.Contract;
 import com.kodekonveyor.cdd.annotations.ContractFactory;
+import com.kodekonveyor.cdd.annotations.ContractRule;
 import com.kodekonveyor.cdd.annotations.Subject;;
 
+@Service
 public class TestContract {
 
   @Subject
@@ -19,9 +21,10 @@ public class TestContract {
   @ContractFactory
   public ContractInfo<ExampleService> it;
 
-  @Contract("a contract with return definition")
+  @ContractRule("a contract with return definition")
   public void contract_passing_return() {
 
+    System.out.println("testData: " + testData);
     it.returns(
         testData.goodReturnValue
     )

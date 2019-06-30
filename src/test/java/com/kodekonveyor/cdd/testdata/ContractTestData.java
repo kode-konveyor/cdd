@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.kodekonveyor.cdd.ContractInfo;
 import com.kodekonveyor.cdd.dto.ContractRunnerData;
+import com.kodekonveyor.cdd.impl.ContractInfoFactory;
 import com.kodekonveyor.cdd.impl.RunnerDataCreationServiceImpl;
 import com.kodekonveyor.cdd.testartifacts.ExampleService;
 import com.kodekonveyor.cdd.testartifacts.TestContract;
@@ -17,6 +18,10 @@ public class ContractTestData {
 
   @Autowired
   public RunnerDataCreationServiceImpl<?> runnerDataCreationServiceImpl;
+
+  @Autowired
+  ContractInfoFactory<ExampleService> contractInfoFactory =
+      new ContractInfoFactory<ExampleService>();
 
   @Autowired
   TestContractRunnerDataCreator testContractRunnerDataCreator =
@@ -45,7 +50,8 @@ public class ContractTestData {
 
   public ContractTestData() {
 
-    contract = new ContractInfo<ExampleService>(serviceInstance);
+    contract = contractInfoFactory.getObject();
+    contract.setService(serviceInstance);
     contract.setDefiningFunction(CONTRACT_PASSING_RETURN);
     contract.runnerDataCreationServiceImpl = runnerDataCreationServiceImpl;
 

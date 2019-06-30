@@ -3,8 +3,8 @@ package com.kodekonveyor.cdd;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.kodekonveyor.cdd.annotations.Contract;
 import com.kodekonveyor.cdd.annotations.ContractFactory;
+import com.kodekonveyor.cdd.annotations.ContractRule;
 import com.kodekonveyor.cdd.annotations.Subject;
 import com.kodekonveyor.cdd.impl.ChildDescriptionServiceImpl;
 import com.kodekonveyor.cdd.testartifacts.ExampleService;
@@ -24,7 +24,7 @@ public class ChildDescriptionServiceContract {
   @ContractFactory
   public ContractInfo<ChildDescriptionService<ExampleService>> it;
 
-  @Contract(
+  @ContractRule(
     "describeChild uses the class and method name of the contract to describe a child"
   )
   public void describeChild_good_values() {

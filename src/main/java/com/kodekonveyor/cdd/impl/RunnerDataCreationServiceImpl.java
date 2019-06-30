@@ -14,8 +14,8 @@ import org.springframework.stereotype.Service;
 import com.kodekonveyor.cdd.ContractCreationService;
 import com.kodekonveyor.cdd.ContractInfo;
 import com.kodekonveyor.cdd.RunnerDataCreationService;
-import com.kodekonveyor.cdd.annotations.Contract;
 import com.kodekonveyor.cdd.annotations.ContractFactory;
+import com.kodekonveyor.cdd.annotations.ContractRule;
 import com.kodekonveyor.cdd.annotations.Subject;
 import com.kodekonveyor.cdd.dto.ContractRunnerData;
 
@@ -80,8 +80,8 @@ public class RunnerDataCreationServiceImpl<ServiceClass>
       createContracts(ContractRunnerData<ServiceClass> data) throws Throwable {
     final List<ContractInfo<ServiceClass>> contracts = new ArrayList<>();
     for (final Method method : data.getTestClass().getMethods()) {
-      List<Contract> annotations =
-          Arrays.asList(method.getDeclaredAnnotationsByType(Contract.class));
+      List<ContractRule> annotations =
+          Arrays.asList(method.getDeclaredAnnotationsByType(ContractRule.class));
       if (!annotations.isEmpty()) {
         contractCreationService.createContract(
             contracts, method, data

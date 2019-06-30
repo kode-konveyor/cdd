@@ -1,10 +1,12 @@
-package com.kodekonveyor.cdd.testartifacts;
+package com.kodekonveyor.cdd.notintegrated;
 
 import org.mockito.InjectMocks;
 
 import com.kodekonveyor.cdd.ContractInfo;
-import com.kodekonveyor.cdd.annotations.Contract;
-import com.kodekonveyor.cdd.annotations.Subject;;
+import com.kodekonveyor.cdd.annotations.ContractRule;
+import com.kodekonveyor.cdd.annotations.Subject;
+import com.kodekonveyor.cdd.testartifacts.Data;
+import com.kodekonveyor.cdd.testartifacts.ExampleService;;
 
 public class TestContractWithAllCases {
 
@@ -15,7 +17,7 @@ public class TestContractWithAllCases {
   @InjectMocks
   public Data testdata;
 
-  @Contract("a contract with return definition")
+  @ContractRule("a contract with return definition")
   public void contract_passing_return(
       final Data testData,
       final ContractInfo<ExampleService> contract
@@ -27,7 +29,7 @@ public class TestContractWithAllCases {
         .testedMethod(testData.goodParameter);
   }
 
-  @Contract("a failing contract with return definition")
+  @ContractRule("a failing contract with return definition")
   public void contract_failing_return(
       final Data testData,
       final ContractInfo<ExampleService> contract
@@ -39,7 +41,7 @@ public class TestContractWithAllCases {
         .testedMethod(testData.goodParameter);
   }
 
-  @Contract("a contract with exception definition")
+  @ContractRule("a contract with exception definition")
   public void contract_passing_exception(
       final Data testData,
       final ContractInfo<ExampleService> contract
@@ -52,7 +54,7 @@ public class TestContractWithAllCases {
         .testedMethod(testData.parameterInducingException);
   }
 
-  @Contract("a contract failing test by not throwing exception")
+  @ContractRule("a contract failing test by not throwing exception")
   public void contract_fail_no_exception(
       final Data testData,
       final ContractInfo<ExampleService> contract
@@ -65,7 +67,7 @@ public class TestContractWithAllCases {
         .testedMethod(testData.goodParameter);
   }
 
-  @Contract("a contract failing test by throwing unexpected exception")
+  @ContractRule("a contract failing test by throwing unexpected exception")
   public void contract_fail_bad_exception(
       final Data testData,
       final ContractInfo<ExampleService> contract

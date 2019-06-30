@@ -26,6 +26,7 @@ public class ContractInfo<ServiceClass> {
   @Autowired
   public RunnerDataCreationServiceImpl<?> runnerDataCreationServiceImpl;
 
+  @Setter
   private ServiceClass service;
   private Object stub;
   private Object returnValue;
@@ -40,8 +41,7 @@ public class ContractInfo<ServiceClass> {
 
   private Class<? extends Object> returnValueContracts;
 
-  public ContractInfo(final ServiceClass service) {
-    this.service = service;
+  public ContractInfo() {
   }
 
   @SuppressWarnings("unchecked")
