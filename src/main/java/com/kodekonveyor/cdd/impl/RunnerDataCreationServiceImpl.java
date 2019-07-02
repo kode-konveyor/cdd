@@ -18,10 +18,18 @@ import com.kodekonveyor.cdd.annotations.ContractFactory;
 import com.kodekonveyor.cdd.annotations.ContractRule;
 import com.kodekonveyor.cdd.annotations.Subject;
 import com.kodekonveyor.cdd.dto.ContractRunnerData;
+import com.kodekonveyor.cdd.exception.StackTraceCreatorService;
+
+import javassist.NotFoundException;
 
 @Service
 public class RunnerDataCreationServiceImpl<ServiceClass>
     implements RunnerDataCreationService<ServiceClass> {
+
+  public static final String NO_TEST_INSTANCE = "NO TEST INSTANCE of ";
+
+  public static final String NO_IT_FIELD =
+      "no field marked @ContractFactory in ";
 
   @Autowired
   FieldGetterServiceImpl fieldGetterService;
@@ -35,11 +43,16 @@ public class RunnerDataCreationServiceImpl<ServiceClass>
   @Autowired
   private AutowireCapableBeanFactory beanFactory;
 
+  @Autowired
+  public StackTraceCreatorService stackTraceCreatorService;
+
   @Override
   public ContractRunnerData<ServiceClass>
       makeRunnerDataFromTestClass(final Class<? extends Object> testClass)
           throws Throwable {
-    return makeRunnerDataFromTestClass(testClass, null);
+    ContractRunnerData<ServiceClass> runnerData =
+        makeRunnerDataFromTestClass(testClass, null);
+    return runnerData;
   }
 
   public ContractRunnerData<ServiceClass> makeRunnerDataFromTestClass(
@@ -48,16 +61,38 @@ public class RunnerDataCreationServiceImpl<ServiceClass>
     ContractRunnerData<ServiceClass> data = new ContractRunnerData<>();
     data.setTestClass(testClass);
     Object testInstance = beanFactory.createBean(testClass);
-    if (null == testInstance)
-      throw new AssertionError("NO TEST INSTANCE of " + testClass);
+    if (null == testInstance) {
+      AssertionError assertionError =
+          new AssertionError(NO_TEST_INSTANCE + testClass);
+      StackTraceElement[] stack =
+          stackTraceCreatorService.createStackTrace(null, testClass);
+      assertionError.setStackTrace(stack);
+
+      throw assertionError;
+    }
 
     setServiceInstance(data, testInstance);
     data.setTestInstance(testInstance);
     Field itField = fieldGetterService
         .getFieldWithAnnotation(ContractFactory.class, testInstance);
-    if (null == itField)
-      throw new AssertionError("NO IT FIELD in " + testInstance);
+    if (null == itField) {
+      AssertionError assertionError =
+          new AssertionError(
+              NO_IT_FIELD + testInstance.getClass().getSimpleName()
+          );
+      StackTraceElement[] stack =
+          stackTraceCreatorService.createStackTrace(testInstance);
+      assertionError.setStackTrace(stack);
+      throw assertionError;
+    }
     data.setItField(itField);
+    Field subjectField = fieldGetterService
+        .getFieldWithAnnotation(Subject.class, testInstance);
+    Class<?> subjectClass = subjectField.getType();
+    System.out.println("creating subject");
+    Object subject = beanFactory.createBean(subjectClass);
+    System.out.println("subject:" + subject);
+    subjectField.set(testInstance, subject);
     data.setContracts(createContracts(data));
     data.setSuiteDescription(Description.createSuiteDescription(testClass));
     for (final ContractInfo<ServiceClass> child : data.getContracts())
@@ -69,7 +104,8 @@ public class RunnerDataCreationServiceImpl<ServiceClass>
   @SuppressWarnings("unchecked")
   private void setServiceInstance(
       ContractRunnerData<ServiceClass> data, Object testInstance
-  ) throws IllegalAccessException {
+  ) throws IllegalAccessException, IllegalArgumentException,
+      NoSuchMethodException, SecurityException, NotFoundException {
     data.setServiceInstance(
         (ServiceClass) fieldGetterService
             .getFieldValueWithAnnotation(Subject.class, testInstance)

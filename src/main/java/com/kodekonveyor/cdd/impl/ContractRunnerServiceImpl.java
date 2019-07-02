@@ -2,11 +2,14 @@ package com.kodekonveyor.cdd.impl;
 
 import static org.mockito.Mockito.mockingDetails;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Method;
 
 import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
+import org.mockito.internal.stubbing.StubbedInvocationMatcher;
 import org.mockito.invocation.Invocation;
 import org.mockito.stubbing.Stubbing;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +41,7 @@ public class ContractRunnerServiceImpl<ServiceClass>
     notifier.fireTestFinished(description);
   }
 
-  private void runChildWithResult(
+  void runChildWithResult(
       final ContractInfo<ServiceClass> contract, final RunNotifier notifier,
       ContractRunnerData<ServiceClass> data, Description description
   ) {
@@ -52,13 +55,15 @@ public class ContractRunnerServiceImpl<ServiceClass>
       final ContractInfo<?> contract, final RunNotifier notifier,
       final Description description
   ) {
-
-    final Stubbing throwingStubbing =
-        mockingDetails(contract.getStub()).getStubbings().iterator().next();
+    final StubbedInvocationMatcher throwingStubbing =
+        (StubbedInvocationMatcher) mockingDetails(contract.getStub()).getStubbings().iterator().next();
     final Invocation throwingInvocation = throwingStubbing.getInvocation();
+    throwingStubbing.markStubUsed(throwingInvocation);
+    System.out.println("throwingInvocation:" + throwingInvocation);
 
     try {
       throwingInvocation.callRealMethod();
+      System.out.println("no exception: " + throwingInvocation);
       notifier.fireTestFailure(
           new Failure(description, new AssertionError("Expected exception "))
       );
@@ -67,12 +72,30 @@ public class ContractRunnerServiceImpl<ServiceClass>
         !(thrown.getClass().equals(contract.getExceptionClass()) &&
             thrown.getMessage().equals(contract.getExceptionMessage()))
       ) {
-
+        String stackTrace = getStackTrace(thrown);
         notifier.fireTestFailure(
-            new Failure(description, new AssertionError("Bad exception "))
+            new Failure(
+                description,
+                new AssertionError(
+                    "Bad exception\nexpected: " +
+                        contract.getExceptionClass() + "(" +
+                        contract.getExceptionMessage() + ")" +
+                        "\n got:" +
+                        thrown.getClass() + "(" + thrown.getMessage() + ")" +
+                        stackTrace
+
+                )
+            )
         );
       }
     }
+  }
+
+  private String getStackTrace(final Throwable throwable) {
+    final StringWriter sw = new StringWriter();
+    final PrintWriter pw = new PrintWriter(sw, true);
+    throwable.printStackTrace(pw);
+    return sw.getBuffer().toString();
   }
 
   private void testReturningContract(

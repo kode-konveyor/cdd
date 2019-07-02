@@ -19,7 +19,7 @@ public class RunnerDataCreationServiceContract {
       ExampleService> runnerDataCreationServiceImpl;
 
   @ContractFactory
-  public ContractInfo<RunnerDataCreationService<ExampleService>> it;
+  public ContractInfo<RunnerDataCreationServiceImpl<ExampleService>> it;
 
   @Autowired
   public ContractTestData testData;
@@ -33,4 +33,5 @@ public class RunnerDataCreationServiceContract {
             testData.contractInstance.getClass()
         );
   }
+
 }
