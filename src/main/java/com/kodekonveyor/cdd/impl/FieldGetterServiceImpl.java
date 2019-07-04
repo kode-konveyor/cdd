@@ -10,7 +10,7 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.stereotype.Service;
 
 import com.kodekonveyor.cdd.FieldGetterService;
-import com.kodekonveyor.cdd.exception.StackTraceCreatorService;
+import com.kodekonveyor.cdd.exception.StackTraceSetterService;
 
 import javassist.NotFoundException;
 
@@ -19,7 +19,7 @@ public class FieldGetterServiceImpl
     implements FieldGetterService {
 
   @Autowired
-  public StackTraceCreatorService stackTraceCreatorService;
+  public StackTraceSetterService stackTraceSetterService;
   @Autowired
   private AutowireCapableBeanFactory beanFactory;
 
@@ -30,14 +30,12 @@ public class FieldGetterServiceImpl
       NoSuchMethodException, SecurityException, NotFoundException {
     Field theField = getFieldWithAnnotation(annotationClass, testInstance);
     if (theField == null) {
-      IllegalArgumentException illegalArgumentException =
-          new IllegalArgumentException(
-              "Annotation not found: @" + annotationClass.getSimpleName()
+      throw (IllegalArgumentException) stackTraceSetterService
+          .changeStackWithClass(
+              new IllegalArgumentException(
+                  "Annotation not found: @" + annotationClass.getSimpleName()
+              ), testInstance.getClass()
           );
-      StackTraceElement[] stackTrace =
-          stackTraceCreatorService.createStackTrace(testInstance);
-      illegalArgumentException.setStackTrace(stackTrace);
-      throw illegalArgumentException;
     }
     return getServiceInstance(theField, testInstance);
   }

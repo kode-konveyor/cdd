@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
-import com.kodekonveyor.cdd.exception.StackTraceCreatorService;
+import com.kodekonveyor.cdd.exception.StackTraceSetterService;
 import com.kodekonveyor.cdd.impl.ChildDescriptionServiceImpl;
 import com.kodekonveyor.cdd.impl.FieldGetterServiceImpl;
 import com.kodekonveyor.cdd.impl.RunnerDataCreationServiceImpl;
@@ -36,7 +36,7 @@ public class RunnerDataServiceExceptionTest {
   private AutowireCapableBeanFactory beanFactory;
 
   @Mock
-  StackTraceCreatorService stackTraceCreatorService;
+  StackTraceSetterService stackTraceSetterService;
 
   @Mock
   TestContractNoIT testInstance;
@@ -45,7 +45,7 @@ public class RunnerDataServiceExceptionTest {
   public void throws_an_exception_when_no__field_annotated_as_ContractFactory()
       throws Throwable {
     doReturn(testInstance).when(beanFactory).createBean(TestContractNoIT.class);
-    runnerDataService.stackTraceCreatorService = new StackTraceCreatorService();
+    runnerDataService.stackTraceSetterService = new StackTraceSetterService();
 
     assertThrows(
         () -> runnerDataService
@@ -61,7 +61,7 @@ public class RunnerDataServiceExceptionTest {
   public void throws_an_exception_when_no_bean_can_be_created()
       throws Throwable {
     doReturn(null).when(beanFactory).createBean(TestContractNoIT.class);
-    runnerDataService.stackTraceCreatorService = new StackTraceCreatorService();
+    runnerDataService.stackTraceSetterService = new StackTraceSetterService();
 
     assertThrows(
         () -> runnerDataService

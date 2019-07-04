@@ -76,7 +76,7 @@ public class ContractCreationServiceTest {
   @Test
   public void defining_function_is_set_to_the_name_of_the_method_parameter() {
     verify(contract)
-        .setDefiningFunction(ContractTestData.CONTRACT_PASSING_RETURN);
+        .setDefiningFunction(contractMethod);
   }
 
   @Test

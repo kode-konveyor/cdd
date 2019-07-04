@@ -48,11 +48,10 @@ public class ContractTestData {
   public ContractRunnerData<ExampleService> contractRunnerDataEmpy =
       new ContractRunnerData<ExampleService>();
 
-  public ContractTestData() {
+  public ContractTestData() throws NoSuchMethodException, SecurityException {
 
     contract = contractInfoFactory.getObject();
     contract.setService(serviceInstance);
-    contract.setDefiningFunction(CONTRACT_PASSING_RETURN);
     contract.runnerDataCreationServiceImpl = runnerDataCreationServiceImpl;
 
     contractList = List.of(contract);
@@ -61,6 +60,10 @@ public class ContractTestData {
         testContractRunnerDataCreator.createTestContractRunnerData(
             contractInstance, contractList, serviceInstance
         );
+    contract.setDefiningFunction(
+        contractInstance.getClass()
+            .getMethod(CONTRACT_PASSING_RETURN)
+    );
 
   }
 

@@ -78,6 +78,6 @@ public class ContractCreationServiceContract {
   ) {
     verify(contractMock).setSuiteData(testData.contractRunnerData);
     verify(contractMock)
-        .setDefiningFunction(ContractJunitTestData.CONTRACT_PASSING_RETURN);
+        .setDefiningFunction(testData.contractMethod);
   }
 }

@@ -18,7 +18,7 @@ import com.kodekonveyor.cdd.annotations.ContractFactory;
 import com.kodekonveyor.cdd.annotations.ContractRule;
 import com.kodekonveyor.cdd.annotations.Subject;
 import com.kodekonveyor.cdd.dto.ContractRunnerData;
-import com.kodekonveyor.cdd.exception.StackTraceCreatorService;
+import com.kodekonveyor.cdd.exception.StackTraceSetterService;
 
 import javassist.NotFoundException;
 
@@ -44,7 +44,7 @@ public class RunnerDataCreationServiceImpl<ServiceClass>
   private AutowireCapableBeanFactory beanFactory;
 
   @Autowired
-  public StackTraceCreatorService stackTraceCreatorService;
+  public StackTraceSetterService stackTraceSetterService;
 
   @Override
   public ContractRunnerData<ServiceClass>
@@ -62,13 +62,10 @@ public class RunnerDataCreationServiceImpl<ServiceClass>
     data.setTestClass(testClass);
     Object testInstance = beanFactory.createBean(testClass);
     if (null == testInstance) {
-      AssertionError assertionError =
-          new AssertionError(NO_TEST_INSTANCE + testClass);
-      StackTraceElement[] stack =
-          stackTraceCreatorService.createStackTrace(null, testClass);
-      assertionError.setStackTrace(stack);
-
-      throw assertionError;
+      throw (AssertionError) stackTraceSetterService.changeStackWithClass(
+          new AssertionError(NO_TEST_INSTANCE + testClass),
+          testClass
+      );
     }
 
     setServiceInstance(data, testInstance);
@@ -76,22 +73,19 @@ public class RunnerDataCreationServiceImpl<ServiceClass>
     Field itField = fieldGetterService
         .getFieldWithAnnotation(ContractFactory.class, testInstance);
     if (null == itField) {
-      AssertionError assertionError =
-          new AssertionError(
-              NO_IT_FIELD + testInstance.getClass().getSimpleName()
+      throw stackTraceSetterService
+          .changeStackWithClass(
+
+              new AssertionError(
+                  NO_IT_FIELD + testInstance.getClass().getSimpleName()
+              ), testInstance.getClass()
           );
-      StackTraceElement[] stack =
-          stackTraceCreatorService.createStackTrace(testInstance);
-      assertionError.setStackTrace(stack);
-      throw assertionError;
     }
     data.setItField(itField);
     Field subjectField = fieldGetterService
         .getFieldWithAnnotation(Subject.class, testInstance);
     Class<?> subjectClass = subjectField.getType();
-    System.out.println("creating subject");
     Object subject = beanFactory.createBean(subjectClass);
-    System.out.println("subject:" + subject);
     subjectField.set(testInstance, subject);
     data.setContracts(createContracts(data));
     data.setSuiteDescription(Description.createSuiteDescription(testClass));

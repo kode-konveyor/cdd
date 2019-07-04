@@ -10,22 +10,19 @@ import javassist.CtMethod;
 import javassist.NotFoundException;
 
 @Service
-public class StackTraceCreatorService {
+public class StackTraceSetterService {
 
   private static final String JAVA_EXTENSION = ".java";
 
-  public StackTraceElement[] createStackTrace(final Method method)
-      throws NotFoundException {
-    Class<?> declaringClass = method.getDeclaringClass();
-    StackTraceElement[] stack = createStackTrace(method, declaringClass);
-    return stack;
-  }
-
-  public StackTraceElement[] createStackTrace(
+  private StackTraceElement[] createStackTrace(
       final Method method, Class<?> declaringClass
   ) throws NotFoundException {
     StackTraceElement[] stack = new StackTraceElement[1];
-    String className = declaringClass.getName();
+    String className;
+    if (null == declaringClass) {
+      className = method.getDeclaringClass().getName();
+    } else
+      className = declaringClass.getName();
     String fileName = createFilenameFromClassName(className);
     className = className.replaceAll("\\$.*", "");
     String methodName;
@@ -54,10 +51,28 @@ public class StackTraceCreatorService {
     return fileName;
   }
 
-  public StackTraceElement[] createStackTrace(Object testInstance)
-      throws NotFoundException {
-    Class<? extends Object> klass = testInstance.getClass();
-    return createStackTrace(null, klass);
+  public Throwable
+      changeStackWithClass(Throwable throwable, Class<?> declaringClass) {
+    StackTraceElement[] stack;
+    try {
+      stack = this.createStackTrace(null, declaringClass);
+    } catch (NotFoundException e) {
+      return e;
+    }
+    throwable.setStackTrace(stack);
+    return throwable;
+  }
+
+  public Throwable
+      changeStackWithMethod(Throwable throwable, Method method) {
+    StackTraceElement[] stack;
+    try {
+      stack = this.createStackTrace(method, null);
+    } catch (NotFoundException e) {
+      return e;
+    }
+    throwable.setStackTrace(stack);
+    return throwable;
   }
 
 }

@@ -133,7 +133,7 @@ public class ContractCreationServiceErrorCasesTest {
 
   @Test
   public void throws_an_error_if_the_contract_method_has_parameters()
-      throws NoSuchFieldException, SecurityException, NoSuchMethodException {
+      throws Throwable {
     contractMethod =
         TestContract.class.getMethod(
             EQUALS_METHOD_NAME,

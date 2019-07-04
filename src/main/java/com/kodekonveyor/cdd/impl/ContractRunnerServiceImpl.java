@@ -2,8 +2,7 @@ package com.kodekonveyor.cdd.impl;
 
 import static org.mockito.Mockito.mockingDetails;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.junit.runner.Description;
@@ -11,13 +10,13 @@ import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 import org.mockito.internal.stubbing.StubbedInvocationMatcher;
 import org.mockito.invocation.Invocation;
-import org.mockito.stubbing.Stubbing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kodekonveyor.cdd.ContractInfo;
 import com.kodekonveyor.cdd.ContractRunnerService;
 import com.kodekonveyor.cdd.dto.ContractRunnerData;
+import com.kodekonveyor.cdd.exception.StackTraceSetterService;
 
 @Service
 public class ContractRunnerServiceImpl<ServiceClass>
@@ -27,6 +26,8 @@ public class ContractRunnerServiceImpl<ServiceClass>
   ChildDescriptionServiceImpl<ServiceClass> childDescriptionService;
   @Autowired
   RunnerDataCreationServiceImpl<ServiceClass> runnerDataCreationServiceImpl;
+  @Autowired
+  StackTraceSetterService stackTraceSetterService;
 
   @Override
   public void runChild(
@@ -59,57 +60,61 @@ public class ContractRunnerServiceImpl<ServiceClass>
         (StubbedInvocationMatcher) mockingDetails(contract.getStub()).getStubbings().iterator().next();
     final Invocation throwingInvocation = throwingStubbing.getInvocation();
     throwingStubbing.markStubUsed(throwingInvocation);
-    System.out.println("throwingInvocation:" + throwingInvocation);
 
     try {
       throwingInvocation.callRealMethod();
-      System.out.println("no exception: " + throwingInvocation);
+      AssertionError originalException = new AssertionError(
+          "Expected " + contract.getExceptionClass().getSimpleName() +
+              ", but no exception thrown"
+      );
+      Throwable exception = stackTraceSetterService
+          .changeStackWithMethod(
+              originalException, throwingStubbing.getMethod()
+          );
       notifier.fireTestFailure(
-          new Failure(description, new AssertionError("Expected exception "))
+          new Failure(
+              description, exception
+          )
       );
     } catch (final Throwable thrown) {
       if (
         !(thrown.getClass().equals(contract.getExceptionClass()) &&
             thrown.getMessage().equals(contract.getExceptionMessage()))
       ) {
-        String stackTrace = getStackTrace(thrown);
+        Throwable thrownException = stackTraceSetterService
+            .changeStackWithMethod(
+                new AssertionError(
+                    "Expected " +
+                        contract.getExceptionClass().getSimpleName() + "(" +
+                        contract.getExceptionMessage() + "), but see cause",
+                    thrown
+                ), throwingStubbing.getMethod()
+            );
         notifier.fireTestFailure(
             new Failure(
                 description,
-                new AssertionError(
-                    "Bad exception\nexpected: " +
-                        contract.getExceptionClass() + "(" +
-                        contract.getExceptionMessage() + ")" +
-                        "\n got:" +
-                        thrown.getClass() + "(" + thrown.getMessage() + ")" +
-                        stackTrace
-
-                )
+                thrownException
             )
         );
       }
     }
   }
 
-  private String getStackTrace(final Throwable throwable) {
-    final StringWriter sw = new StringWriter();
-    final PrintWriter pw = new PrintWriter(sw, true);
-    throwable.printStackTrace(pw);
-    return sw.getBuffer().toString();
-  }
-
   private void testReturningContract(
       final ContractInfo<ServiceClass> contract, final RunNotifier notifier,
       final Description description
   ) {
-    final Stubbing stubbing =
-        mockingDetails(contract.getStub()).getStubbings().iterator().next();
+    final StubbedInvocationMatcher stubbing =
+        (StubbedInvocationMatcher) mockingDetails(contract.getStub()).getStubbings().iterator().next();
     final Invocation invocation = stubbing.getInvocation();
     final Object answer;
     try {
+      stubbing.markStubUsed(invocation);
       answer = stubbing.answer(invocation);
     } catch (final Throwable thrown) {
-      notifier.fireTestFailure(new Failure(description, thrown));
+      Throwable exception = stackTraceSetterService
+          .changeStackWithMethod(thrown, stubbing.getMethod());
+      notifier.fireTestFailure(new Failure(description, exception));
       return;
     }
 
@@ -124,24 +129,36 @@ public class ContractRunnerServiceImpl<ServiceClass>
       final Object answer
   ) {
     Object result;
+    Method method = invocation.getMethod();
     try {
       Object[] arguments = invocation.getArguments();
-      Method method = invocation.getMethod();
+
       ServiceClass serviceInstance =
           contract.getSuiteData().getServiceInstance();
       result = method.invoke(serviceInstance, arguments);
 
-    } catch (final Throwable thrown) {
-      notifier.fireTestFailure(new Failure(description, thrown));
+    } catch (final InvocationTargetException thrown) {
+      Throwable exception = stackTraceSetterService
+          .changeStackWithMethod(thrown.getCause(), method);
+      notifier.fireTestFailure(new Failure(description, exception));
+      return;
+    } catch (IllegalAccessException | IllegalArgumentException e) {
+      Throwable exception = stackTraceSetterService
+          .changeStackWithMethod(e, contract.getDefiningFunction());
+      notifier.fireTestFailure(new Failure(description, exception));
       return;
     }
     if (!equals(answer, result)) {
+      Throwable exception = stackTraceSetterService
+          .changeStackWithMethod(
+              new AssertionError(
+                  "Bad return, expected " + answer + " got " + result
+              ), contract.getDefiningFunction()
+          );
       notifier.fireTestFailure(
           new Failure(
               description,
-              new AssertionError(
-                  "Bad return,expected " + answer + " got " + result
-              )
+              exception
           )
       );
       return;

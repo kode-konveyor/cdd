@@ -11,15 +11,15 @@ import org.springframework.stereotype.Service;
 import com.kodekonveyor.cdd.ContractCreationService;
 import com.kodekonveyor.cdd.ContractInfo;
 import com.kodekonveyor.cdd.dto.ContractRunnerData;
-import com.kodekonveyor.cdd.exception.StackTraceCreatorService;
+import com.kodekonveyor.cdd.exception.StackTraceSetterService;
 
 @Service
 public class ContractCreationServiceImpl<ServiceClass>
     implements ContractCreationService<ServiceClass> {
 
   @Autowired
-  StackTraceCreatorService stackTraceCreatorService =
-      new StackTraceCreatorService();
+  StackTraceSetterService stackTraceSetterService =
+      new StackTraceSetterService();
 
   public static final String NO_IT_FIELD =
       "No field marked with @ContractFactory in contract";
@@ -37,21 +37,17 @@ public class ContractCreationServiceImpl<ServiceClass>
     contract.setService(serviceInstance);
 
     contract.setSuiteData(data);
-    contract.setDefiningFunction(method.getName());
+    contract.setDefiningFunction(method);
     Field itField = data.getItField();
-    StackTraceElement[] stack =
-        stackTraceCreatorService.createStackTrace(method);
     if (null == itField) {
-      AssertionError exceptionObject = new AssertionError(NO_IT_FIELD);
-      exceptionObject.setStackTrace(stack);
-      throw exceptionObject;
+      throw stackTraceSetterService
+          .changeStackWithMethod(new AssertionError(NO_IT_FIELD), method);
     }
     try {
       itField.set(testInstance, contract);
     } catch (IllegalArgumentException | IllegalAccessException e) {
-      AssertionError assertionError = new AssertionError(e);
-      assertionError.setStackTrace(stack);
-      throw assertionError;
+      throw stackTraceSetterService
+          .changeStackWithMethod(new AssertionError(e), method);
     }
 
     try {
@@ -59,18 +55,13 @@ public class ContractCreationServiceImpl<ServiceClass>
     } catch (
         IllegalAccessException | IllegalArgumentException e
     ) {
-      AssertionError assertionError = new AssertionError(e);
-      assertionError.setStackTrace(stack);
-      throw assertionError;
+      throw stackTraceSetterService
+          .changeStackWithMethod(new AssertionError(e), method);
     } catch (
       InvocationTargetException e
     ) {
-      e.printStackTrace();
-      Throwable cause =
-          e.getCause().getClass().getConstructor(String.class)
-              .newInstance(e.getCause().getMessage());
-      cause.setStackTrace(stack);
-      throw cause;
+      throw stackTraceSetterService
+          .changeStackWithMethod(e.getCause(), method);
     }
 
     contracts.add(contract);

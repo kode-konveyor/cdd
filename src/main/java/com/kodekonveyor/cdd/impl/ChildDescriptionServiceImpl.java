@@ -18,7 +18,7 @@ public class ChildDescriptionServiceImpl<ServiceClass>
   ) {
     return Description
         .createTestDescription(
-            data.getTestClass(), contract.getDefiningFunction()
+            data.getTestClass(), contract.getDefiningFunction().getName()
         );
   }
 

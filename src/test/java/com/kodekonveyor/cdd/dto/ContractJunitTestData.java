@@ -25,18 +25,15 @@ public class ContractJunitTestData {
   ContractInfoFactory<ExampleService> contractInfoFactory;
 
   @ContextItem
-  private ExampleService exampleService;// = mock(ExampleService.class);
-
+  private ExampleService exampleService;
   @ContextItem
-  private TestContract contractInstance;// = mock(TestContract.class);
-
+  private TestContract contractInstance;
   @ContextItem
-  public ContractInfo<ExampleService> contract;// = mock(ContractInfo.class);
+  public ContractInfo<ExampleService> contract;
   @ContextItem
-  public ContractRunnerData<ExampleService> contractRunnerData;// = mock(ContractRunnerData.class);
-
+  public ContractRunnerData<ExampleService> contractRunnerData;
   @ContextItem
-  public List<ContractInfo<ExampleService>> contracts;// = mock(List.class);
+  public List<ContractInfo<ExampleService>> contracts;
 
   public Method contractMethod;
 

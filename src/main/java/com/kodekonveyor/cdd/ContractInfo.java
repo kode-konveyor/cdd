@@ -3,11 +3,10 @@ package com.kodekonveyor.cdd;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockingDetails;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
-import org.mockito.MockingDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -35,16 +34,13 @@ public class ContractInfo<ServiceClass> {
   private Class<? extends RuntimeException> exceptionClass;
   private String exceptionMessage;
   @Setter
-  private String definingFunction;
+  private Method definingFunction;
   @EqualsAndHashCode.Exclude
   @ToString.Exclude
   @Setter
   private ContractRunnerData<ServiceClass> suiteData;
 
   private Class<? extends Object> returnValueContracts;
-
-  public ContractInfo() {
-  }
 
   @SuppressWarnings("unchecked")
   public ServiceClass
@@ -69,13 +65,11 @@ public class ContractInfo<ServiceClass> {
               .newInstance(exceptionMessage)
           )
               .when(serviceMock);
-      MockingDetails info = mockingDetails(stub);
     } catch (
         InstantiationException | IllegalAccessException |
         IllegalArgumentException | InvocationTargetException |
         NoSuchMethodException | SecurityException e
     ) {
-      e.printStackTrace();
       throw new AssertionError("cannot stub", e);
     }
     return (ServiceClass) stub;
