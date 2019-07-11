@@ -1,8 +1,8 @@
-package com.kodekonveyor.cdd;
+package com.kodekonveyor.cdd.build;
 
 import org.springframework.stereotype.Service;
 
-import com.kodekonveyor.cdd.dto.ContractRunnerData;
+import com.kodekonveyor.cdd.run.dto.ContractRunnerData;
 
 @Service
 public interface RunnerDataCreationService<ServiceClass> {

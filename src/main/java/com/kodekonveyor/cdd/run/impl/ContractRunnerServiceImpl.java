@@ -1,4 +1,4 @@
-package com.kodekonveyor.cdd.impl;
+package com.kodekonveyor.cdd.run.impl;
 
 import static org.mockito.Mockito.mockingDetails;
 
@@ -14,9 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kodekonveyor.cdd.ContractInfo;
-import com.kodekonveyor.cdd.ContractRunnerService;
-import com.kodekonveyor.cdd.dto.ContractRunnerData;
+import com.kodekonveyor.cdd.build.impl.ChildDescriptionServiceImpl;
+import com.kodekonveyor.cdd.build.impl.RunnerDataCreationServiceImpl;
 import com.kodekonveyor.cdd.exception.StackTraceSetterService;
+import com.kodekonveyor.cdd.run.ContractRunnerService;
+import com.kodekonveyor.cdd.run.dto.ContractRunnerData;
+
+import lombok.Setter;
 
 @Service
 public class ContractRunnerServiceImpl<ServiceClass>
@@ -27,6 +31,7 @@ public class ContractRunnerServiceImpl<ServiceClass>
   @Autowired
   RunnerDataCreationServiceImpl<ServiceClass> runnerDataCreationServiceImpl;
   @Autowired
+  @Setter
   StackTraceSetterService stackTraceSetterService;
 
   @Override

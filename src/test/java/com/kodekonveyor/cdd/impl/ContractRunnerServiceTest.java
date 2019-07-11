@@ -8,6 +8,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
@@ -19,8 +20,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.kodekonveyor.cdd.ContractInfo;
-import com.kodekonveyor.cdd.dto.ContractRunnerData;
-import com.kodekonveyor.cdd.exception.StackTraceSetterService;
+import com.kodekonveyor.cdd.build.impl.ChildDescriptionServiceImpl;
+import com.kodekonveyor.cdd.build.impl.RunnerDataCreationServiceImpl;
+import com.kodekonveyor.cdd.exception.impl.StackTraceSetterServiceImpl;
+import com.kodekonveyor.cdd.run.dto.ContractRunnerData;
+import com.kodekonveyor.cdd.run.impl.ContractRunnerServiceImpl;
 import com.kodekonveyor.cdd.testartifacts.ExampleService;
 import com.kodekonveyor.cdd.testartifacts.TestContract;
 import com.kodekonveyor.cdd.testdata.ContractTestData;
@@ -52,6 +56,12 @@ public class ContractRunnerServiceTest {
   @Mock
   ExampleService exampleService;
 
+  @Before
+  public void setUp() {
+    contractRunnerServiceImpl
+        .setStackTraceSetterService(new StackTraceSetterServiceImpl());
+  }
+
   @Test
   public void runs_throwing_contract() throws Throwable {
     ExampleService stub =
@@ -71,8 +81,6 @@ public class ContractRunnerServiceTest {
 
   @Test
   public void fails_if_throwing_contract_does_not_throw() throws Throwable {
-    contractRunnerServiceImpl.stackTraceSetterService =
-        new StackTraceSetterService();
     ExampleService stub =
         doReturn(VALUE_NO_EXCEPTION).when(exampleService);
     stub.testedMethod(VALUE_NO_EXCEPTION);
@@ -102,8 +110,6 @@ public class ContractRunnerServiceTest {
   @Test
   public void fails_if_throwing_contract_throws_other_exception()
       throws Throwable {
-    contractRunnerServiceImpl.stackTraceSetterService =
-        new StackTraceSetterService();
     ExampleService stub =
         doThrow(new IllegalArgumentException(BAD_PARAMETER)).when(exampleService);
     stub.testedMethod(1);
@@ -144,8 +150,6 @@ public class ContractRunnerServiceTest {
   public void
       fails_if_throwing_contract_throws_same_exception_with_other_message()
           throws Throwable {
-    contractRunnerServiceImpl.stackTraceSetterService =
-        new StackTraceSetterService();
     ExampleService stub =
         doThrow(new IllegalArgumentException(BAD_PARAMETER)).when(exampleService);
     stub.testedMethod(1);
@@ -186,8 +190,6 @@ public class ContractRunnerServiceTest {
   public void
       fails_if_returning_contract_has_throwing_stub()
           throws Throwable {
-    contractRunnerServiceImpl.stackTraceSetterService =
-        new StackTraceSetterService();
     ExampleService stub =
         doThrow(new IllegalArgumentException(BAD_PARAMETER)).when(exampleService);
     stub.testedMethod(1);
@@ -219,8 +221,6 @@ public class ContractRunnerServiceTest {
   public void
       fails_if_returning_contract_throws()
           throws Throwable {
-    contractRunnerServiceImpl.stackTraceSetterService =
-        new StackTraceSetterService();
     ExampleService stub =
         doReturn(VALUE_NO_EXCEPTION).when(exampleService);
     stub.testedMethod(1);
@@ -256,8 +256,6 @@ public class ContractRunnerServiceTest {
   public void
       fails_if_returning_contract_called_with_bad_parameters()
           throws Throwable {
-    contractRunnerServiceImpl.stackTraceSetterService =
-        new StackTraceSetterService();
     ExampleService stub =
         doReturn(VALUE_NO_EXCEPTION).when(exampleService);
     stub.testedMethod(1);
@@ -295,8 +293,6 @@ public class ContractRunnerServiceTest {
   public void
       fails_if_returning_contract_return_unexpected_value()
           throws Throwable {
-    contractRunnerServiceImpl.stackTraceSetterService =
-        new StackTraceSetterService();
     ExampleService stub =
         doReturn(VALUE_NO_EXCEPTION).when(exampleService);
     stub.testedMethod(VALUE_NO_EXCEPTION);
@@ -336,8 +332,6 @@ public class ContractRunnerServiceTest {
   public void
       works_for_null_answer()
           throws Throwable {
-    contractRunnerServiceImpl.stackTraceSetterService =
-        new StackTraceSetterService();
     ExampleService stub =
         doReturn(null).when(exampleService);
     stub.testedMethod(VALUE_NO_EXCEPTION);
@@ -360,8 +354,6 @@ public class ContractRunnerServiceTest {
   public void
       failing_works_for_null_answer()
           throws Throwable {
-    contractRunnerServiceImpl.stackTraceSetterService =
-        new StackTraceSetterService();
     ExampleService stub =
         doReturn(null).when(exampleService);
     stub.testedMethod(VALUE_NO_EXCEPTION);

@@ -1,4 +1,4 @@
-package com.kodekonveyor.cdd.impl;
+package com.kodekonveyor.cdd.build.impl;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -11,14 +11,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.stereotype.Service;
 
-import com.kodekonveyor.cdd.ContractCreationService;
 import com.kodekonveyor.cdd.ContractInfo;
-import com.kodekonveyor.cdd.RunnerDataCreationService;
-import com.kodekonveyor.cdd.annotations.ContractFactory;
-import com.kodekonveyor.cdd.annotations.ContractRule;
-import com.kodekonveyor.cdd.annotations.Subject;
-import com.kodekonveyor.cdd.dto.ContractRunnerData;
+import com.kodekonveyor.cdd.annotation.ContractFactory;
+import com.kodekonveyor.cdd.annotation.ContractRule;
+import com.kodekonveyor.cdd.annotation.Subject;
+import com.kodekonveyor.cdd.build.ChildDescriptionService;
+import com.kodekonveyor.cdd.build.ContractCreationService;
+import com.kodekonveyor.cdd.build.RunnerDataCreationService;
 import com.kodekonveyor.cdd.exception.StackTraceSetterService;
+import com.kodekonveyor.cdd.fields.FieldGetterService;
+import com.kodekonveyor.cdd.run.dto.ContractRunnerData;
 
 import javassist.NotFoundException;
 
@@ -32,10 +34,10 @@ public class RunnerDataCreationServiceImpl<ServiceClass>
       "no field marked @ContractFactory in ";
 
   @Autowired
-  FieldGetterServiceImpl fieldGetterService;
+  FieldGetterService fieldGetterService;
 
   @Autowired
-  ChildDescriptionServiceImpl<ServiceClass> childDescriptionService;
+  ChildDescriptionService<ServiceClass> childDescriptionService;
 
   @Autowired
   ContractCreationService<ServiceClass> contractCreationService;

@@ -3,8 +3,8 @@ package com.kodekonveyor.cdd.notintegrated;
 import org.mockito.InjectMocks;
 
 import com.kodekonveyor.cdd.ContractInfo;
-import com.kodekonveyor.cdd.annotations.ContractRule;
-import com.kodekonveyor.cdd.annotations.Subject;
+import com.kodekonveyor.cdd.annotation.ContractRule;
+import com.kodekonveyor.cdd.annotation.Subject;
 import com.kodekonveyor.cdd.testartifacts.Data;
 import com.kodekonveyor.cdd.testartifacts.ExampleService;;
 

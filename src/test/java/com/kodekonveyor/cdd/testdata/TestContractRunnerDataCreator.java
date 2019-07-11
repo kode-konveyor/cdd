@@ -6,7 +6,7 @@ import org.junit.runner.Description;
 import org.springframework.stereotype.Service;
 
 import com.kodekonveyor.cdd.ContractInfo;
-import com.kodekonveyor.cdd.dto.ContractRunnerData;
+import com.kodekonveyor.cdd.run.dto.ContractRunnerData;
 import com.kodekonveyor.cdd.testartifacts.ExampleService;
 import com.kodekonveyor.cdd.testartifacts.TestContract;
 

@@ -10,10 +10,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
+import com.kodekonveyor.cdd.build.ContractCreationService;
+import com.kodekonveyor.cdd.build.impl.ChildDescriptionServiceImpl;
+import com.kodekonveyor.cdd.build.impl.RunnerDataCreationServiceImpl;
 import com.kodekonveyor.cdd.exception.StackTraceSetterService;
-import com.kodekonveyor.cdd.impl.ChildDescriptionServiceImpl;
-import com.kodekonveyor.cdd.impl.FieldGetterServiceImpl;
-import com.kodekonveyor.cdd.impl.RunnerDataCreationServiceImpl;
+import com.kodekonveyor.cdd.exception.impl.StackTraceSetterServiceImpl;
+import com.kodekonveyor.cdd.fields.FieldGetterService;
 import com.kodekonveyor.cdd.testartifacts.ExampleService;
 import com.kodekonveyor.cdd.testartifacts.TestContractNoIT;
 
@@ -24,7 +26,7 @@ public class RunnerDataServiceExceptionTest {
   RunnerDataCreationServiceImpl<ExampleService> runnerDataService;
 
   @Mock
-  FieldGetterServiceImpl fieldGetterService;
+  FieldGetterService fieldGetterService;
 
   @Mock
   ChildDescriptionServiceImpl<ExampleService> childDescriptionService;
@@ -45,7 +47,7 @@ public class RunnerDataServiceExceptionTest {
   public void throws_an_exception_when_no__field_annotated_as_ContractFactory()
       throws Throwable {
     doReturn(testInstance).when(beanFactory).createBean(TestContractNoIT.class);
-    runnerDataService.stackTraceSetterService = new StackTraceSetterService();
+    runnerDataService.stackTraceSetterService = new StackTraceSetterServiceImpl();
 
     assertThrows(
         () -> runnerDataService
@@ -61,7 +63,7 @@ public class RunnerDataServiceExceptionTest {
   public void throws_an_exception_when_no_bean_can_be_created()
       throws Throwable {
     doReturn(null).when(beanFactory).createBean(TestContractNoIT.class);
-    runnerDataService.stackTraceSetterService = new StackTraceSetterService();
+    runnerDataService.stackTraceSetterService = new StackTraceSetterServiceImpl();
 
     assertThrows(
         () -> runnerDataService

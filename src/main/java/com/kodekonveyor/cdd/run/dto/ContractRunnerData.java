@@ -1,4 +1,4 @@
-package com.kodekonveyor.cdd.dto;
+package com.kodekonveyor.cdd.run.dto;
 
 import java.lang.reflect.Field;
 import java.util.List;

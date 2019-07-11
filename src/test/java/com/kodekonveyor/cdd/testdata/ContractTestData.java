@@ -2,14 +2,16 @@ package com.kodekonveyor.cdd.testdata;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.junit.runner.Description;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kodekonveyor.cdd.ContractInfo;
-import com.kodekonveyor.cdd.dto.ContractRunnerData;
-import com.kodekonveyor.cdd.impl.ContractInfoFactory;
-import com.kodekonveyor.cdd.impl.RunnerDataCreationServiceImpl;
+import com.kodekonveyor.cdd.assemble.ContractInfoFactory;
+import com.kodekonveyor.cdd.build.impl.RunnerDataCreationServiceImpl;
+import com.kodekonveyor.cdd.run.dto.ContractRunnerData;
 import com.kodekonveyor.cdd.testartifacts.ExampleService;
 import com.kodekonveyor.cdd.testartifacts.TestContract;
 
@@ -20,8 +22,7 @@ public class ContractTestData {
   public RunnerDataCreationServiceImpl<?> runnerDataCreationServiceImpl;
 
   @Autowired
-  ContractInfoFactory<ExampleService> contractInfoFactory =
-      new ContractInfoFactory<ExampleService>();
+  ContractInfoFactory<ExampleService> contractInfoFactory;
 
   @Autowired
   TestContractRunnerDataCreator testContractRunnerDataCreator =
@@ -48,11 +49,11 @@ public class ContractTestData {
   public ContractRunnerData<ExampleService> contractRunnerDataEmpy =
       new ContractRunnerData<ExampleService>();
 
-  public ContractTestData() throws NoSuchMethodException, SecurityException {
+  @PostConstruct
+  void initialize() throws NoSuchMethodException, SecurityException {
 
     contract = contractInfoFactory.getObject();
     contract.setService(serviceInstance);
-    contract.runnerDataCreationServiceImpl = runnerDataCreationServiceImpl;
 
     contractList = List.of(contract);
 

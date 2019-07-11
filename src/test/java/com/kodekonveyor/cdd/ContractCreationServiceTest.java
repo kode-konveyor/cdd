@@ -14,9 +14,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import com.kodekonveyor.cdd.dto.ContractRunnerData;
-import com.kodekonveyor.cdd.impl.ContractCreationServiceImpl;
-import com.kodekonveyor.cdd.impl.ContractInfoFactory;
+import com.kodekonveyor.cdd.assemble.ContractInfoFactory;
+import com.kodekonveyor.cdd.build.impl.ContractCreationServiceImpl;
+import com.kodekonveyor.cdd.run.dto.ContractRunnerData;
 import com.kodekonveyor.cdd.testartifacts.ExampleService;
 import com.kodekonveyor.cdd.testartifacts.TestContract;
 import com.kodekonveyor.cdd.testdata.ContractTestData;

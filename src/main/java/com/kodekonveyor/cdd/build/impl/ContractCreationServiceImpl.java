@@ -1,4 +1,4 @@
-package com.kodekonveyor.cdd.impl;
+package com.kodekonveyor.cdd.build.impl;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -8,10 +8,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.kodekonveyor.cdd.ContractCreationService;
 import com.kodekonveyor.cdd.ContractInfo;
-import com.kodekonveyor.cdd.dto.ContractRunnerData;
+import com.kodekonveyor.cdd.assemble.ContractInfoFactory;
+import com.kodekonveyor.cdd.build.ContractCreationService;
 import com.kodekonveyor.cdd.exception.StackTraceSetterService;
+import com.kodekonveyor.cdd.exception.impl.StackTraceSetterServiceImpl;
+import com.kodekonveyor.cdd.run.dto.ContractRunnerData;
 
 @Service
 public class ContractCreationServiceImpl<ServiceClass>
@@ -19,7 +21,7 @@ public class ContractCreationServiceImpl<ServiceClass>
 
   @Autowired
   StackTraceSetterService stackTraceSetterService =
-      new StackTraceSetterService();
+      new StackTraceSetterServiceImpl(); //FIXME
 
   public static final String NO_IT_FIELD =
       "No field marked with @ContractFactory in contract";

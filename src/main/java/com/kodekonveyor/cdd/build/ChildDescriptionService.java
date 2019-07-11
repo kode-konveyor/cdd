@@ -1,8 +1,9 @@
-package com.kodekonveyor.cdd;
+package com.kodekonveyor.cdd.build;
 
 import org.junit.runner.Description;
 
-import com.kodekonveyor.cdd.dto.ContractRunnerData;
+import com.kodekonveyor.cdd.ContractInfo;
+import com.kodekonveyor.cdd.run.dto.ContractRunnerData;
 
 public interface ChildDescriptionService<ServiceClass> {
 

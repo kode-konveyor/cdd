@@ -1,106 +1,67 @@
 package com.kodekonveyor.cdd.exception;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
-
+@Service
 public class ThrowableTester {
 
-  static ThrowableTesterFactory throwableTesterFactory =
-      new ThrowableTesterFactory();
-  private Throwable thrown;
+  @Autowired
+  ThrowableTesterService throwableTesterService;
 
-  public static ThrowableTester assertThrows(final Thrower thrower) {
-    ThrowableTester tester = throwableTesterFactory.getObject();
-    try {
-      thrower.throwException();
-    } catch (final Throwable exception) {// NOPMD
-      tester.thrown = exception;
-    }
-    if (tester.thrown == null)
-      fail("no exception thrown");
-    return tester;
+  ThrowableTesterData data;
+
+  protected ThrowableTester() {
+    data = new ThrowableTesterData();
   }
 
-  public ThrowableTester assertMessageIs(final String message) {
-    assertEquals(message, thrown.getMessage());
-    return this;
+  public static ThrowableTester assertThrows(final Thrower thrower) {
+    return ThrowableTesterServiceImpl.assertThrows(thrower);
+  }
+
+  public ThrowableTester assertMessageIs(String message) {
+    return throwableTesterService.assertMessageIs(message, this);
   }
 
   public Throwable getException() {
-    return thrown;
+    return throwableTesterService.getException(this);
   }
 
-  public ThrowableTester
-      assertException(final Class<? extends Throwable> klass) {
-    final String message =
-        String
-            .format(
-                "expected %s but got %s", klass,
-                ExceptionUtils.getStackTrace(thrown)
-            );
-    assertEquals(message, klass, thrown.getClass());
-    return this;
+  public ThrowableTester assertException(Class<? extends Throwable> klass) {
+    return throwableTesterService.assertException(klass, this);
   }
 
-  public ThrowableTester assertUnimplemented(final Thrower thrower) {
-    assertThrows(thrower).assertException(UnsupportedOperationException.class);
-    return this;
+  public ThrowableTester assertUnimplemented(Thrower thrower) {
+    return throwableTesterService.assertUnimplemented(thrower, this);
   }
 
   public ThrowableTester assertMessageMatches(String string) {
-    assertNotNull("no message of the exception", thrown.getMessage());
-    assertTrue(
-        "message does not match. \nexpected: " + string + "\n got:" +
-            thrown.getMessage(),
-        thrown.getMessage().matches(string)
-    );
-    return this;
+    return throwableTesterService.assertMessageMatches(string, this);
   }
 
   public ThrowableTester assertMessageContains(String string) {
-    assertTrue(
-        "message does not contain: " + string + "\n got:" +
-            thrown.getMessage(),
-        thrown.getMessage().contains(string)
-    );
-    return this;
+    return throwableTesterService.assertMessageContains(string, this);
   }
 
   public ThrowableTester assertStackFileName(int stackIndex, String string) {
-    StackTraceElement stackElement = getStackTraceElement(stackIndex);
-    assertEquals(string, stackElement.getFileName());
-    return this;
+    return throwableTesterService.assertStackFileName(stackIndex, string, this);
   }
 
   public ThrowableTester assertStackClass(int stackIndex, String string) {
-    StackTraceElement stackElement = getStackTraceElement(stackIndex);
-    assertEquals(string, stackElement.getClassName());
-    return this;
+    return throwableTesterService.assertStackClass(stackIndex, string, this);
   }
 
   public ThrowableTester assertStackLineNumber(int stackIndex, int lineNumber) {
-    StackTraceElement stackElement = getStackTraceElement(stackIndex);
-    assertEquals(lineNumber, stackElement.getLineNumber());
-    return this;
+    return throwableTesterService
+        .assertStackLineNumber(stackIndex, lineNumber, this);
   }
 
   public ThrowableTester assertStackMethod(int stackIndex, String string) {
-    StackTraceElement stackElement = getStackTraceElement(stackIndex);
-    assertEquals(string, stackElement.getMethodName());
-    return this;
-  }
-
-  private StackTraceElement getStackTraceElement(int stackIndex) {
-    return thrown.getStackTrace()[stackIndex];
+    return throwableTesterService.assertStackMethod(stackIndex, string, this);
   }
 
   public ThrowableTester showStackTrace() {
-    thrown.printStackTrace();
-    return this;
+    return throwableTesterService.showStackTrace(this);
   }
 
 }

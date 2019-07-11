@@ -6,13 +6,13 @@ import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kodekonveyor.cdd.ContractInfo;
-import com.kodekonveyor.cdd.annotations.Context;
-import com.kodekonveyor.cdd.annotations.ContractFactory;
-import com.kodekonveyor.cdd.annotations.ContractRule;
-import com.kodekonveyor.cdd.annotations.Subject;
+import com.kodekonveyor.cdd.annotation.Context;
+import com.kodekonveyor.cdd.annotation.ContractFactory;
+import com.kodekonveyor.cdd.annotation.ContractRule;
+import com.kodekonveyor.cdd.annotation.Subject;
+import com.kodekonveyor.cdd.assemble.ContractInfoFactory;
+import com.kodekonveyor.cdd.build.impl.ContractCreationServiceImpl;
 import com.kodekonveyor.cdd.dto.ContractJunitTestData;
-import com.kodekonveyor.cdd.impl.ContractCreationServiceImpl;
-import com.kodekonveyor.cdd.impl.ContractInfoFactory;
 import com.kodekonveyor.cdd.testartifacts.ExampleService;
 
 //@RunWith(ContractRunner.class)

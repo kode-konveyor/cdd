@@ -8,9 +8,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kodekonveyor.cdd.ContractInfo;
-import com.kodekonveyor.cdd.impl.ContractInfoFactory;
+import com.kodekonveyor.cdd.assemble.ContractInfoFactory;
 import com.kodekonveyor.cdd.notintegrated.ContextItem;
 import com.kodekonveyor.cdd.notintegrated.ContextRule;
+import com.kodekonveyor.cdd.run.dto.ContractRunnerData;
 import com.kodekonveyor.cdd.testartifacts.ExampleService;
 import com.kodekonveyor.cdd.testartifacts.TestContract;
 

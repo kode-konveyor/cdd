@@ -1,11 +1,11 @@
-package com.kodekonveyor.cdd.impl;
+package com.kodekonveyor.cdd.build.impl;
 
 import org.junit.runner.Description;
 import org.springframework.stereotype.Service;
 
-import com.kodekonveyor.cdd.ChildDescriptionService;
 import com.kodekonveyor.cdd.ContractInfo;
-import com.kodekonveyor.cdd.dto.ContractRunnerData;
+import com.kodekonveyor.cdd.build.ChildDescriptionService;
+import com.kodekonveyor.cdd.run.dto.ContractRunnerData;
 
 @Service
 public class ChildDescriptionServiceImpl<ServiceClass>

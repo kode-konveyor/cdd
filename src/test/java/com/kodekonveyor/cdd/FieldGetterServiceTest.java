@@ -10,9 +10,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import com.kodekonveyor.cdd.annotations.Context;
-import com.kodekonveyor.cdd.exception.StackTraceSetterService;
-import com.kodekonveyor.cdd.impl.FieldGetterServiceImpl;
+import com.kodekonveyor.cdd.annotation.Context;
+import com.kodekonveyor.cdd.exception.impl.StackTraceSetterServiceImpl;
+import com.kodekonveyor.cdd.fields.impl.FieldGetterServiceImpl;
 import com.kodekonveyor.cdd.testartifacts.TestContract;
 
 import javassist.NotFoundException;
@@ -24,7 +24,7 @@ public class FieldGetterServiceTest {
   public FieldGetterServiceImpl fieldGetterServiceImpl;
 
   @Mock
-  StackTraceSetterService stackTraceSetterService;
+  StackTraceSetterServiceImpl stackTraceSetterService;
 
   @Mock
   private TestContract contractInstance;

@@ -3,10 +3,10 @@ package com.kodekonveyor.cdd;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.kodekonveyor.cdd.annotations.ContractFactory;
-import com.kodekonveyor.cdd.annotations.ContractRule;
-import com.kodekonveyor.cdd.annotations.Subject;
-import com.kodekonveyor.cdd.impl.RunnerDataCreationServiceImpl;
+import com.kodekonveyor.cdd.annotation.ContractFactory;
+import com.kodekonveyor.cdd.annotation.ContractRule;
+import com.kodekonveyor.cdd.annotation.Subject;
+import com.kodekonveyor.cdd.build.impl.RunnerDataCreationServiceImpl;
 import com.kodekonveyor.cdd.testartifacts.ExampleService;
 import com.kodekonveyor.cdd.testdata.ContractTestData;
 

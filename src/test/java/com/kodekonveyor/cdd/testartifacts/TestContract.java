@@ -4,9 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kodekonveyor.cdd.ContractInfo;
-import com.kodekonveyor.cdd.annotations.ContractFactory;
-import com.kodekonveyor.cdd.annotations.ContractRule;
-import com.kodekonveyor.cdd.annotations.Subject;;
+import com.kodekonveyor.cdd.annotation.ContractFactory;
+import com.kodekonveyor.cdd.annotation.ContractRule;
+import com.kodekonveyor.cdd.annotation.Subject;;
 
 @Service
 public class TestContract {

@@ -5,14 +5,15 @@ import java.util.List;
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.ParentRunner;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import com.kodekonveyor.cdd.dto.ContractRunnerData;
-import com.kodekonveyor.cdd.impl.ChildDescriptionServiceImpl;
-import com.kodekonveyor.cdd.impl.ContractRunnerServiceImpl;
-import com.kodekonveyor.cdd.impl.RunnerDataCreationServiceImpl;
+import com.kodekonveyor.cdd.build.ChildDescriptionService;
+import com.kodekonveyor.cdd.build.RunnerDataCreationService;
+import com.kodekonveyor.cdd.run.ContractRunnerService;
+import com.kodekonveyor.cdd.run.dto.ContractRunnerData;
 
+import lombok.Setter;
+
+@Setter
 public class ContractRunner<ServiceClass>
     extends ParentRunner<ContractInfo<ServiceClass>> {
 
@@ -25,24 +26,8 @@ public class ContractRunner<ServiceClass>
   public ContractRunner(final Class<? extends Object> testClass)
       throws Throwable {
     super(testClass);
-    loadDependencies();
+    ContractRunnerService.loadDependencies(this);
     data = runnerDataCreationService.makeRunnerDataFromTestClass(testClass);
-  }
-
-  @SuppressWarnings("unchecked")
-  private void loadDependencies() {
-    try (
-        ConfigurableApplicationContext ctx =
-            new ClassPathXmlApplicationContext("applicationContext.xml")
-    ) {
-      runnerDataCreationService =
-          (RunnerDataCreationServiceImpl<ServiceClass>) ctx
-              .getBean("runnerDataCreationServiceImpl");
-      contractRunnerService = (ContractRunnerServiceImpl<ServiceClass>) ctx
-          .getBean("contractRunnerServiceImpl");
-      childDescriptionService = (ChildDescriptionServiceImpl<ServiceClass>) ctx
-          .getBean("childDescriptionServiceImpl");
-    }
   }
 
   @Override

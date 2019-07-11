@@ -1,4 +1,4 @@
-package com.kodekonveyor.cdd.impl;
+package com.kodekonveyor.cdd.fields.impl;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.stereotype.Service;
 
-import com.kodekonveyor.cdd.FieldGetterService;
 import com.kodekonveyor.cdd.exception.StackTraceSetterService;
+import com.kodekonveyor.cdd.fields.FieldGetterService;
 
 import javassist.NotFoundException;
 
@@ -24,10 +24,11 @@ public class FieldGetterServiceImpl
   private AutowireCapableBeanFactory beanFactory;
 
   @Override
-  public <T extends Annotation> Object getFieldValueWithAnnotation(
-      Class<T> annotationClass, Object testInstance
-  ) throws IllegalArgumentException, IllegalAccessException,
-      NoSuchMethodException, SecurityException, NotFoundException {
+  public <AnnotationClass extends Annotation> Object
+      getFieldValueWithAnnotation(
+          Class<AnnotationClass> annotationClass, Object testInstance
+      ) throws IllegalArgumentException, IllegalAccessException,
+          NoSuchMethodException, SecurityException, NotFoundException {
     Field theField = getFieldWithAnnotation(annotationClass, testInstance);
     if (theField == null) {
       throw (IllegalArgumentException) stackTraceSetterService
@@ -40,12 +41,15 @@ public class FieldGetterServiceImpl
     return getServiceInstance(theField, testInstance);
   }
 
-  public <T extends Annotation> Field
-      getFieldWithAnnotation(Class<T> annotationClass, Object testInstance) {
+  @Override
+  public <AnnotationClass extends Annotation> Field
+      getFieldWithAnnotation(
+          Class<AnnotationClass> annotationClass, Object testInstance
+      ) {
     Field theField = null;
     for (final Field field : testInstance.getClass().getFields()) {
 
-      final List<T> annotations =
+      final List<AnnotationClass> annotations =
           getAnnotationsFor(field, annotationClass);
       if (!annotations.isEmpty())
         theField = field;
@@ -53,8 +57,10 @@ public class FieldGetterServiceImpl
     return theField;
   }
 
-  private <T extends Annotation> List<T>
-      getAnnotationsFor(final Field field, Class<T> annotationClass) {
+  private <AnnotationClass extends Annotation> List<AnnotationClass>
+      getAnnotationsFor(
+          final Field field, Class<AnnotationClass> annotationClass
+      ) {
     return Arrays
         .asList(field.getDeclaredAnnotationsByType(annotationClass));
   }
