@@ -26,25 +26,27 @@ public class FieldGetterServiceImpl
   @Override
   public <AnnotationClass extends Annotation> Object
       getFieldValueWithAnnotation(
-          Class<AnnotationClass> annotationClass, Object testInstance
-      ) throws IllegalArgumentException, IllegalAccessException,
-          NoSuchMethodException, SecurityException, NotFoundException {
-    Field theField = getFieldWithAnnotation(annotationClass, testInstance);
-    if (theField == null) {
-      throw (IllegalArgumentException) stackTraceSetterService
+          final Class<AnnotationClass> annotationClass,
+          final Object testInstance
+      ) throws IllegalAccessException,
+          NoSuchMethodException, NotFoundException {
+    final Field theField =
+        getFieldWithAnnotation(annotationClass, testInstance);
+    if (theField == null)
+      throw (IllegalArgumentException) this.stackTraceSetterService
           .changeStackWithClass(
               new IllegalArgumentException(
                   "Annotation not found: @" + annotationClass.getSimpleName()
               ), testInstance.getClass()
           );
-    }
     return getServiceInstance(theField, testInstance);
   }
 
   @Override
   public <AnnotationClass extends Annotation> Field
       getFieldWithAnnotation(
-          Class<AnnotationClass> annotationClass, Object testInstance
+          final Class<AnnotationClass> annotationClass,
+          final Object testInstance
       ) {
     Field theField = null;
     for (final Field field : testInstance.getClass().getFields()) {
@@ -59,7 +61,7 @@ public class FieldGetterServiceImpl
 
   private <AnnotationClass extends Annotation> List<AnnotationClass>
       getAnnotationsFor(
-          final Field field, Class<AnnotationClass> annotationClass
+          final Field field, final Class<AnnotationClass> annotationClass
       ) {
     return Arrays
         .asList(field.getDeclaredAnnotationsByType(annotationClass));
@@ -67,12 +69,12 @@ public class FieldGetterServiceImpl
 
   private Object
       getServiceInstance(
-          final Field field, Object testInstance
-      ) throws IllegalArgumentException, IllegalAccessException {
+          final Field field, final Object testInstance
+      ) throws IllegalAccessException {
 
-    Object instance = field.get(testInstance);
+    final Object instance = field.get(testInstance);
     if (null != instance)
-      beanFactory.autowireBean(instance);
+      this.beanFactory.autowireBean(instance);
     return instance;
   }
 

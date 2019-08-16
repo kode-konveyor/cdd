@@ -14,43 +14,44 @@ import com.kodekonveyor.cdd.run.dto.ContractRunnerData;
 import lombok.Setter;
 
 @Setter
-public class ContractRunner<ServiceClass>
-    extends ParentRunner<ContractInfo<ServiceClass>> {
+public class ContractRunner<ServiceType>
+    extends ParentRunner<ContractInfo<ServiceType>> {
 
-  RunnerDataCreationService<ServiceClass> runnerDataCreationService;
-  ContractRunnerService<ServiceClass> contractRunnerService;
-  ChildDescriptionService<ServiceClass> childDescriptionService;
+  private RunnerDataCreationService<ServiceType> runnerDataCreationService;
+  private ContractRunnerService<ServiceType> contractRunnerService;
+  private ChildDescriptionService<ServiceType> childDescriptionService;
 
-  private ContractRunnerData<ServiceClass> data;
+  private ContractRunnerData<ServiceType> data;
 
   public ContractRunner(final Class<? extends Object> testClass)
       throws Throwable {
     super(testClass);
     ContractRunnerService.loadDependencies(this);
-    data = runnerDataCreationService.makeRunnerDataFromTestClass(testClass);
+    this.data =
+        this.runnerDataCreationService.makeRunnerDataFromTestClass(testClass);
   }
 
   @Override
   public Description getDescription() {
-    return data.getSuiteDescription();
+    return this.data.getSuiteDescription();
   }
 
   @Override
-  protected List<ContractInfo<ServiceClass>> getChildren() {
-    return data.getContracts();
+  protected List<ContractInfo<ServiceType>> getChildren() {
+    return this.data.getContracts();
   }
 
   @Override
   protected Description
-      describeChild(final ContractInfo<ServiceClass> contract) {
-    return childDescriptionService.describeChild(contract, data);
+      describeChild(final ContractInfo<ServiceType> contract) {
+    return this.childDescriptionService.describeChild(contract, this.data);
 
   }
 
   @Override
   protected void
-      runChild(ContractInfo<ServiceClass> child, RunNotifier notifier) {
-    contractRunnerService.runChild(child, notifier, data);
+      runChild(final ContractInfo<ServiceType> child, final RunNotifier notifier) {
+    this.contractRunnerService.runChild(child, notifier, this.data);
   }
 
 }

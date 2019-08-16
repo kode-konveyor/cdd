@@ -46,33 +46,36 @@ public class RunnerDataServiceExceptionTest {
   @Test
   public void throws_an_exception_when_no__field_annotated_as_ContractFactory()
       throws Throwable {
-    doReturn(testInstance).when(beanFactory).createBean(TestContractNoIT.class);
-    runnerDataService.stackTraceSetterService = new StackTraceSetterServiceImpl();
+    doReturn(this.testInstance).when(this.beanFactory)
+        .createBean(TestContractNoIT.class);
+    this.runnerDataService
+        .setStackTraceSetterService(new StackTraceSetterServiceImpl());
 
     assertThrows(
-        () -> runnerDataService
+        () -> this.runnerDataService
             .makeRunnerDataFromTestClass(TestContractNoIT.class)
     )
         .assertException(AssertionError.class)
         .assertMessageContains(RunnerDataCreationServiceImpl.NO_IT_FIELD)
-        .assertMessageContains(testInstance.getClass().getSimpleName())
+        .assertMessageContains(this.testInstance.getClass().getSimpleName())
         .assertStackClass(0, TestContractNoIT.class.getName());
   }
 
   @Test
   public void throws_an_exception_when_no_bean_can_be_created()
       throws Throwable {
-    doReturn(null).when(beanFactory).createBean(TestContractNoIT.class);
-    runnerDataService.stackTraceSetterService = new StackTraceSetterServiceImpl();
+    doReturn(null).when(this.beanFactory).createBean(TestContractNoIT.class);
+    this.runnerDataService
+        .setStackTraceSetterService(new StackTraceSetterServiceImpl());
 
     assertThrows(
-        () -> runnerDataService
+        () -> this.runnerDataService
             .makeRunnerDataFromTestClass(TestContractNoIT.class)
     )
         .assertException(AssertionError.class)
         .assertMessageContains(RunnerDataCreationServiceImpl.NO_TEST_INSTANCE)
         .assertMessageContains(
-            testInstance.getClass().getName().replaceAll("\\$.*", "")
+            this.testInstance.getClass().getName().replaceAll("\\$.*", "")
         )
         .assertStackClass(0, TestContractNoIT.class.getName());
   }

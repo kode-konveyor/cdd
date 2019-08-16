@@ -28,10 +28,4 @@ public class TestContractNoIT {
         .testedMethod(testData.goodParameter);
   }
 
-  @Override
-  public boolean equals(Object other) {
-    if (other == null)
-      return false;
-    return other.getClass().equals(this.getClass());
-  }
 }

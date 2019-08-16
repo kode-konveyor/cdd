@@ -8,15 +8,15 @@ import org.springframework.stereotype.Service;
 import com.kodekonveyor.cdd.ContractInfo;
 
 @Service
-public class ContractInfoFactory<ServiceClass>
-    implements FactoryBean<ContractInfo<ServiceClass>> {
+public class ContractInfoFactory<ServiceType>
+    implements FactoryBean<ContractInfo<ServiceType>> {
 
   @Autowired
   private AutowireCapableBeanFactory beanFactory;
 
   @Override
-  public ContractInfo<ServiceClass> getObject() {
-    ContractInfo<ServiceClass> newObj = new ContractInfo<ServiceClass>();
+  public ContractInfo<ServiceType> getObject() {
+    ContractInfo<ServiceType> newObj = new ContractInfo<>();
     beanFactory.autowireBean(newObj);
     return newObj;
   }

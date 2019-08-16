@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import com.kodekonveyor.cdd.ContractInfo;
 import com.kodekonveyor.cdd.annotation.ContractFactory;
 import com.kodekonveyor.cdd.annotation.ContractRule;
-import com.kodekonveyor.cdd.annotation.Subject;;
+import com.kodekonveyor.cdd.annotation.Subject;
 
 @Service
 public class TestContract {
@@ -35,5 +35,10 @@ public class TestContract {
     if (other == null)
       return false;
     return other.getClass().equals(this.getClass());
+  }
+
+  @Override
+  public int hashCode() {
+    return this.getClass().getName().hashCode();
   }
 }

@@ -5,10 +5,10 @@ import org.junit.runner.Description;
 import com.kodekonveyor.cdd.ContractInfo;
 import com.kodekonveyor.cdd.run.dto.ContractRunnerData;
 
-public interface ChildDescriptionService<ServiceClass> {
+public interface ChildDescriptionService<ServiceType> {
 
   Description describeChild(
-      final ContractInfo<ServiceClass> contract,
-      ContractRunnerData<ServiceClass> data
+      final ContractInfo<ServiceType> contract,
+      ContractRunnerData<ServiceType> data
   );
 }

@@ -8,13 +8,13 @@ import com.kodekonveyor.cdd.build.ChildDescriptionService;
 import com.kodekonveyor.cdd.run.dto.ContractRunnerData;
 
 @Service
-public class ChildDescriptionServiceImpl<ServiceClass>
-    implements ChildDescriptionService<ServiceClass> {
+public class ChildDescriptionServiceImpl<ServiceType>
+    implements ChildDescriptionService<ServiceType> {
 
   @Override
   public Description describeChild(
-      final ContractInfo<ServiceClass> contract,
-      ContractRunnerData<ServiceClass> data
+      final ContractInfo<ServiceType> contract,
+      final ContractRunnerData<ServiceType> data
   ) {
     return Description
         .createTestDescription(

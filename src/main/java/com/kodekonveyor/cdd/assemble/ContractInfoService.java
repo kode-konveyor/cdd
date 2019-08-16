@@ -2,15 +2,15 @@ package com.kodekonveyor.cdd.assemble;
 
 import com.kodekonveyor.cdd.ContractInfo;
 
-public interface ContractInfoService<ServiceClass> {
+public interface ContractInfoService<ServiceType> {
 
-  ServiceClass returns(
-      Object returnValue, ContractInfo<ServiceClass> contractInfo
+  ServiceType returns(
+      Object returnValue, ContractInfo<ServiceType> contractInfo
   );
 
-  ServiceClass throwing(
+  ServiceType throwing(
       Class<? extends RuntimeException> exceptionClass,
-      String exceptionMessage, ContractInfo<ServiceClass> contractInfo
+      String exceptionMessage, ContractInfo<ServiceType> contractInfo
   );
 
 }

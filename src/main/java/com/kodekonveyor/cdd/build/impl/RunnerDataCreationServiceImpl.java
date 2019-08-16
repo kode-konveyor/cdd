@@ -23,10 +23,12 @@ import com.kodekonveyor.cdd.fields.FieldGetterService;
 import com.kodekonveyor.cdd.run.dto.ContractRunnerData;
 
 import javassist.NotFoundException;
+import lombok.Getter;
+import lombok.Setter;
 
 @Service
-public class RunnerDataCreationServiceImpl<ServiceClass>
-    implements RunnerDataCreationService<ServiceClass> {
+public class RunnerDataCreationServiceImpl<ServiceType>
+    implements RunnerDataCreationService<ServiceType> {
 
   public static final String NO_TEST_INSTANCE = "NO TEST INSTANCE of ";
 
@@ -34,91 +36,108 @@ public class RunnerDataCreationServiceImpl<ServiceClass>
       "no field marked @ContractFactory in ";
 
   @Autowired
-  FieldGetterService fieldGetterService;
+  private FieldGetterService fieldGetterService;
 
   @Autowired
-  ChildDescriptionService<ServiceClass> childDescriptionService;
+  private ChildDescriptionService<ServiceType> childDescriptionService;
 
   @Autowired
-  ContractCreationService<ServiceClass> contractCreationService;
+  private ContractCreationService<ServiceType> contractCreationService;
 
   @Autowired
   private AutowireCapableBeanFactory beanFactory;
 
   @Autowired
-  public StackTraceSetterService stackTraceSetterService;
+  @Getter
+  @Setter
+  private StackTraceSetterService stackTraceSetterService;
 
   @Override
-  public ContractRunnerData<ServiceClass>
+  public ContractRunnerData<ServiceType>
       makeRunnerDataFromTestClass(final Class<? extends Object> testClass)
           throws Throwable {
-    ContractRunnerData<ServiceClass> runnerData =
-        makeRunnerDataFromTestClass(testClass, null);
-    return runnerData;
+    return makeRunnerDataFromTestClass(testClass, null);
   }
 
-  public ContractRunnerData<ServiceClass> makeRunnerDataFromTestClass(
-      Class<? extends Object> testClass, Object myAnswer
+  public ContractRunnerData<ServiceType> makeRunnerDataFromTestClass(
+      final Class<? extends Object> testClass, final Object myAnswer
   ) throws Throwable {
-    ContractRunnerData<ServiceClass> data = new ContractRunnerData<>();
+    final ContractRunnerData<ServiceType> data = new ContractRunnerData<>();
     data.setTestClass(testClass);
-    Object testInstance = beanFactory.createBean(testClass);
-    if (null == testInstance) {
-      throw (AssertionError) stackTraceSetterService.changeStackWithClass(
-          new AssertionError(NO_TEST_INSTANCE + testClass),
-          testClass
-      );
-    }
+    final Object testInstance = this.beanFactory.createBean(testClass);
+    checktestInstance(testClass, testInstance);
 
     setServiceInstance(data, testInstance);
     data.setTestInstance(testInstance);
-    Field itField = fieldGetterService
+    final Field itField = this.fieldGetterService
         .getFieldWithAnnotation(ContractFactory.class, testInstance);
-    if (null == itField) {
-      throw stackTraceSetterService
+    checkItField(testInstance, itField);
+    data.setItField(itField);
+    makeSubjectField(testInstance);
+    data.setContracts(createContracts(data));
+    data.setSuiteDescription(Description.createSuiteDescription(testClass));
+    registerTestCases(data);
+    return data;
+  }
+
+  private void checkItField(final Object testInstance, final Field itField)
+      throws Throwable {
+    if (null == itField)
+      throw this.getStackTraceSetterService()
           .changeStackWithClass(
 
               new AssertionError(
                   NO_IT_FIELD + testInstance.getClass().getSimpleName()
               ), testInstance.getClass()
           );
-    }
-    data.setItField(itField);
-    Field subjectField = fieldGetterService
-        .getFieldWithAnnotation(Subject.class, testInstance);
-    Class<?> subjectClass = subjectField.getType();
-    Object subject = beanFactory.createBean(subjectClass);
-    subjectField.set(testInstance, subject);
-    data.setContracts(createContracts(data));
-    data.setSuiteDescription(Description.createSuiteDescription(testClass));
-    for (final ContractInfo<ServiceClass> child : data.getContracts())
+  }
+
+  private void checktestInstance(
+      final Class<? extends Object> testClass, final Object testInstance
+  ) throws AssertionError {
+    if (null == testInstance)
+      throw (AssertionError) this.getStackTraceSetterService()
+          .changeStackWithClass(
+              new AssertionError(NO_TEST_INSTANCE + testClass),
+              testClass
+          );
+  }
+
+  private void registerTestCases(final ContractRunnerData<ServiceType> data) {
+    for (final ContractInfo<ServiceType> child : data.getContracts())
       data.getSuiteDescription()
-          .addChild(childDescriptionService.describeChild(child, data));
-    return data;
+          .addChild(this.childDescriptionService.describeChild(child, data));
+  }
+
+  private void makeSubjectField(final Object testInstance)
+      throws IllegalAccessException {
+    final Field subjectField = this.fieldGetterService
+        .getFieldWithAnnotation(Subject.class, testInstance);
+    final Class<?> subjectClass = subjectField.getType();
+    final Object subject = this.beanFactory.createBean(subjectClass);
+    subjectField.set(testInstance, subject);
   }
 
   @SuppressWarnings("unchecked")
   private void setServiceInstance(
-      ContractRunnerData<ServiceClass> data, Object testInstance
-  ) throws IllegalAccessException, IllegalArgumentException,
-      NoSuchMethodException, SecurityException, NotFoundException {
+      final ContractRunnerData<ServiceType> data, final Object testInstance
+  ) throws NoSuchMethodException, NotFoundException, IllegalAccessException {
     data.setServiceInstance(
-        (ServiceClass) fieldGetterService
+        (ServiceType) this.fieldGetterService
             .getFieldValueWithAnnotation(Subject.class, testInstance)
     );
   }
 
-  private List<ContractInfo<ServiceClass>>
-      createContracts(ContractRunnerData<ServiceClass> data) throws Throwable {
-    final List<ContractInfo<ServiceClass>> contracts = new ArrayList<>();
+  private List<ContractInfo<ServiceType>>
+      createContracts(final ContractRunnerData<ServiceType> data) throws Throwable {
+    final List<ContractInfo<ServiceType>> contracts = new ArrayList<>();
     for (final Method method : data.getTestClass().getMethods()) {
-      List<ContractRule> annotations =
+      final List<ContractRule> annotations =
           Arrays.asList(method.getDeclaredAnnotationsByType(ContractRule.class));
-      if (!annotations.isEmpty()) {
-        contractCreationService.createContract(
+      if (!annotations.isEmpty())
+        this.contractCreationService.createContract(
             contracts, method, data
         );
-      }
     }
     return contracts;
   }
