@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import com.kodekonveyor.cdd.ContractInfo;
 import com.kodekonveyor.cdd.build.impl.ChildDescriptionServiceImpl;
-import com.kodekonveyor.cdd.build.impl.RunnerDataCreationServiceImpl;
 import com.kodekonveyor.cdd.exception.StackTraceSetterService;
 import com.kodekonveyor.cdd.run.ContractRunnerService;
 import com.kodekonveyor.cdd.run.dto.ContractRunnerData;
@@ -23,33 +22,31 @@ import com.kodekonveyor.cdd.run.dto.ContractRunnerData;
 import lombok.Setter;
 
 @Service
-public class ContractRunnerServiceImpl<ServiceClass>
-    implements ContractRunnerService<ServiceClass> {
+public class ContractRunnerServiceImpl<ServiceType>
+    implements ContractRunnerService<ServiceType> {
 
   @Autowired
-  ChildDescriptionServiceImpl<ServiceClass> childDescriptionService;
-  @Autowired
-  RunnerDataCreationServiceImpl<ServiceClass> runnerDataCreationServiceImpl;
+  private ChildDescriptionServiceImpl<ServiceType> childDescriptionService;
   @Autowired
   @Setter
-  StackTraceSetterService stackTraceSetterService;
+  private StackTraceSetterService stackTraceSetterService;
 
   @Override
   public void runChild(
-      final ContractInfo<ServiceClass> contract, final RunNotifier notifier,
-      ContractRunnerData<ServiceClass> data
+      final ContractInfo<ServiceType> contract, final RunNotifier notifier,
+      final ContractRunnerData<ServiceType> data
   ) {
     final Description description =
-        childDescriptionService.describeChild(contract, data);
+        this.childDescriptionService.describeChild(contract, data);
     data.getTestInstance();
     notifier.fireTestStarted(description);
-    runChildWithResult(contract, notifier, data, description);
+    runChildWithResult(contract, notifier, description);
     notifier.fireTestFinished(description);
   }
 
-  void runChildWithResult(
-      final ContractInfo<ServiceClass> contract, final RunNotifier notifier,
-      ContractRunnerData<ServiceClass> data, Description description
+  private void runChildWithResult(
+      final ContractInfo<ServiceType> contract, final RunNotifier notifier,
+      final Description description
   ) {
     if (contract.getExceptionClass() == null)
       testReturningContract(contract, notifier, description);
@@ -68,11 +65,11 @@ public class ContractRunnerServiceImpl<ServiceClass>
 
     try {
       throwingInvocation.callRealMethod();
-      AssertionError originalException = new AssertionError(
+      final AssertionError originalException = new AssertionError(
           "Expected " + contract.getExceptionClass().getSimpleName() +
               ", but no exception thrown"
       );
-      Throwable exception = stackTraceSetterService
+      final Throwable exception = this.stackTraceSetterService
           .changeStackWithMethod(
               originalException, throwingStubbing.getMethod()
           );
@@ -81,12 +78,12 @@ public class ContractRunnerServiceImpl<ServiceClass>
               description, exception
           )
       );
-    } catch (final Throwable thrown) {
+    } catch (final Throwable thrown) { //NOPMD AvoidCatchingThrowable
       if (
         !(thrown.getClass().equals(contract.getExceptionClass()) &&
             thrown.getMessage().equals(contract.getExceptionMessage()))
       ) {
-        Throwable thrownException = stackTraceSetterService
+        final Throwable thrownException = this.stackTraceSetterService
             .changeStackWithMethod(
                 new AssertionError(
                     "Expected " +
@@ -106,7 +103,7 @@ public class ContractRunnerServiceImpl<ServiceClass>
   }
 
   private void testReturningContract(
-      final ContractInfo<ServiceClass> contract, final RunNotifier notifier,
+      final ContractInfo<ServiceType> contract, final RunNotifier notifier,
       final Description description
   ) {
     final StubbedInvocationMatcher stubbing =
@@ -116,8 +113,8 @@ public class ContractRunnerServiceImpl<ServiceClass>
     try {
       stubbing.markStubUsed(invocation);
       answer = stubbing.answer(invocation);
-    } catch (final Throwable thrown) {
-      Throwable exception = stackTraceSetterService
+    } catch (final Throwable thrown) { //NOPMD AvoidCatchingThrowable
+      final Throwable exception = this.stackTraceSetterService
           .changeStackWithMethod(thrown, stubbing.getMethod());
       notifier.fireTestFailure(new Failure(description, exception));
       return;
@@ -129,32 +126,32 @@ public class ContractRunnerServiceImpl<ServiceClass>
   }
 
   private void runOneReturningContract(
-      final ContractInfo<ServiceClass> contract, final RunNotifier notifier,
+      final ContractInfo<ServiceType> contract, final RunNotifier notifier,
       final Description description, final Invocation invocation,
       final Object answer
   ) {
     Object result;
-    Method method = invocation.getMethod();
+    final Method method = invocation.getMethod();
     try {
-      Object[] arguments = invocation.getArguments();
+      final Object[] arguments = invocation.getArguments();
 
-      ServiceClass serviceInstance =
+      final ServiceType serviceInstance =
           contract.getSuiteData().getServiceInstance();
       result = method.invoke(serviceInstance, arguments);
 
     } catch (final InvocationTargetException thrown) {
-      Throwable exception = stackTraceSetterService
+      final Throwable exception = this.stackTraceSetterService
           .changeStackWithMethod(thrown.getCause(), method);
       notifier.fireTestFailure(new Failure(description, exception));
       return;
     } catch (IllegalAccessException | IllegalArgumentException e) {
-      Throwable exception = stackTraceSetterService
+      final Throwable exception = this.stackTraceSetterService
           .changeStackWithMethod(e, contract.getDefiningFunction());
       notifier.fireTestFailure(new Failure(description, exception));
       return;
     }
-    if (!equals(answer, result)) {
-      Throwable exception = stackTraceSetterService
+    if (!isAnswerEquals(answer, result)) {
+      final Throwable exception = this.stackTraceSetterService
           .changeStackWithMethod(
               new AssertionError(
                   "Bad return, expected " + answer + " got " + result
@@ -170,7 +167,8 @@ public class ContractRunnerServiceImpl<ServiceClass>
     }
   }
 
-  private boolean equals(final Object returnValue, final Object answer) {
+  private boolean
+      isAnswerEquals(final Object returnValue, final Object answer) {
     if (returnValue == null)
       return answer == null;
     return returnValue.equals(answer);

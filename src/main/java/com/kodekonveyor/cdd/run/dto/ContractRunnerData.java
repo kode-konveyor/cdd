@@ -14,14 +14,14 @@ import lombok.Setter;
 @Getter
 @Setter
 @EqualsAndHashCode
-public class ContractRunnerData<ServiceClass> {
+public class ContractRunnerData<ServiceType> {
 
   private Class<? extends Object> testClass;
   private Object testInstance;
   private Description suiteDescription;
   @EqualsAndHashCode.Exclude
-  private List<ContractInfo<ServiceClass>> contracts;
+  private List<ContractInfo<ServiceType>> contracts;
   private Field itField;
-  private ServiceClass serviceInstance;
+  private ServiceType serviceInstance;
 
 }

@@ -8,28 +8,28 @@ import com.kodekonveyor.cdd.assemble.ContractInfoServiceImpl;
 import lombok.Getter;
 import lombok.experimental.Delegate;
 
-public class ContractInfo<ServiceClass> {
+public class ContractInfo<ServiceType> {
 
   @Delegate
   @Getter
-  ContractInfoData<ServiceClass> data;
+  private final ContractInfoData<ServiceType> data;
 
   @Autowired
-  ContractInfoServiceImpl<ServiceClass> contractInfoServiceImpl;
+  private ContractInfoServiceImpl<ServiceType> contractInfoServiceImpl;
 
   public ContractInfo() {
-    data = new ContractInfoData<>();//FIXME
+    this.data = new ContractInfoData<>();//FIXME
   }
 
-  public ServiceClass returns(Object returnValue) {
-    return contractInfoServiceImpl.returns(returnValue, this);
+  public ServiceType returns(final Object returnValue) {
+    return this.contractInfoServiceImpl.returns(returnValue, this);
   }
 
-  public ServiceClass throwing(
-      Class<? extends RuntimeException> exceptionClass,
-      String exceptionMessage
+  public ServiceType throwing(
+      final Class<? extends RuntimeException> exceptionClass,
+      final String exceptionMessage
   ) {
-    return contractInfoServiceImpl
+    return this.contractInfoServiceImpl
         .throwing(exceptionClass, exceptionMessage, this);
   }
 

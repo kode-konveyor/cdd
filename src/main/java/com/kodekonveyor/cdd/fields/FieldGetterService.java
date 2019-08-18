@@ -9,8 +9,8 @@ public interface FieldGetterService {
 
   <AnnotationClass extends Annotation> Object getFieldValueWithAnnotation(
       Class<AnnotationClass> annotationClass, Object testInstance
-  ) throws IllegalArgumentException, IllegalAccessException,
-      NoSuchMethodException, SecurityException, NotFoundException;
+  ) throws IllegalAccessException,
+      NoSuchMethodException, NotFoundException;
 
   <AnnotationClass extends Annotation> Field getFieldWithAnnotation(
       Class<AnnotationClass> annotationClass, Object testInstance

@@ -11,34 +11,35 @@ import org.springframework.stereotype.Service;
 import com.kodekonveyor.cdd.ContractInfo;
 
 @Service
-public class ContractInfoServiceImpl<ServiceClass>
-    implements ContractInfoService<ServiceClass> {
+public class ContractInfoServiceImpl<ServiceType>
+    implements ContractInfoService<ServiceType> {
 
   @Override
   @SuppressWarnings("unchecked")
-  public ServiceClass returns(
-      final Object returnValue, ContractInfo<ServiceClass> contractInfo
+  public ServiceType returns(
+      final Object returnValue, final ContractInfo<ServiceType> contractInfo
   ) {
-    ContractInfoData<ServiceClass> data = contractInfo.getData();
+    final ContractInfoData<ServiceType> data = contractInfo.getData();
     data.setReturnValue(returnValue);
     data.setStub(
         doReturn(returnValue).when(mock(data.getService().getClass()))
     );
-    return (ServiceClass) data.getStub();
+    return (ServiceType) data.getStub();
   }
 
   @Override
   @SuppressWarnings("unchecked")
-  public ServiceClass throwing(
+  public ServiceType throwing(
       final Class<? extends RuntimeException> exceptionClass,
-      final String exceptionMessage, ContractInfo<ServiceClass> contractInfo
+      final String exceptionMessage,
+      final ContractInfo<ServiceType> contractInfo
   ) {
-    ContractInfoData<ServiceClass> data = contractInfo.getData();
+    final ContractInfoData<ServiceType> data = contractInfo.getData();
     data.setExceptionClass(exceptionClass);
     data.setExceptionMessage(exceptionMessage);
     try {
-      Class<? extends Object> serviceClass = data.getService().getClass();
-      Object serviceMock = mock(serviceClass);
+      final Class<? extends Object> serviceClass = data.getService().getClass();
+      final Object serviceMock = mock(serviceClass);
       data.setStub(
           doThrow(exceptionClass.getConstructor(String.class)
               .newInstance(exceptionMessage)
@@ -52,7 +53,7 @@ public class ContractInfoServiceImpl<ServiceClass>
     ) {
       throw new AssertionError("cannot stub", e);
     }
-    return (ServiceClass) data.getStub();
+    return (ServiceType) data.getStub();
   }
 
 }

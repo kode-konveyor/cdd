@@ -11,17 +11,17 @@ import com.kodekonveyor.cdd.build.impl.ChildDescriptionServiceImpl;
 import com.kodekonveyor.cdd.run.dto.ContractRunnerData;
 import com.kodekonveyor.cdd.run.impl.ContractRunnerServiceImpl;
 
-public interface ContractRunnerService<ServiceClass> {
+public interface ContractRunnerService<ServiceType> {
 
-  public void runChild(
-      final ContractInfo<ServiceClass> contract, final RunNotifier notifier,
-      ContractRunnerData<ServiceClass> data
+  void runChild(
+      final ContractInfo<ServiceType> contract, final RunNotifier notifier,
+      ContractRunnerData<ServiceType> data
   );
 
   @SuppressWarnings({
       "unchecked", "rawtypes"
   })
-  static void loadDependencies(ContractRunner<?> self) {
+  static void loadDependencies(final ContractRunner<?> self) {
     try (
         ConfigurableApplicationContext ctx =
             new ClassPathXmlApplicationContext("applicationContext.xml")

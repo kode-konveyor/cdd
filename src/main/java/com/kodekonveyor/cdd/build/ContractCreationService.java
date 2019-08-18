@@ -6,11 +6,11 @@ import java.util.List;
 import com.kodekonveyor.cdd.ContractInfo;
 import com.kodekonveyor.cdd.run.dto.ContractRunnerData;
 
-public interface ContractCreationService<ServiceClass> {
+public interface ContractCreationService<ServiceType> {
 
-  ContractInfo<ServiceClass> createContract(
-      List<ContractInfo<ServiceClass>> contracts, Method method,
-      ContractRunnerData<ServiceClass> data
+  ContractInfo<ServiceType> createContract(
+      List<ContractInfo<ServiceType>> contracts, Method method,
+      ContractRunnerData<ServiceType> data
   ) throws AssertionError, Throwable;
 
 }

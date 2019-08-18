@@ -6,16 +6,16 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ContractInfoDataFactory<ServiceClass>
-    implements FactoryBean<ContractInfoData<ServiceClass>> {
+public class ContractInfoDataFactory<ServiceType>
+    implements FactoryBean<ContractInfoData<ServiceType>> {
 
   @Autowired
   private AutowireCapableBeanFactory beanFactory;
 
   @Override
-  public ContractInfoData<ServiceClass> getObject() {
-    ContractInfoData<ServiceClass> newObj =
-        new ContractInfoData<ServiceClass>();
+  public ContractInfoData<ServiceType> getObject() {
+    ContractInfoData<ServiceType> newObj =
+        new ContractInfoData<>();
     beanFactory.autowireBean(newObj);
     return newObj;
   }

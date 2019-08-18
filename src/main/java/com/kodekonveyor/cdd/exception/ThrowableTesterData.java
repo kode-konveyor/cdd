@@ -4,6 +4,4 @@ public class ThrowableTesterData {
 
   public Throwable thrown;
 
-  public ThrowableTesterData() {
-  }
 }

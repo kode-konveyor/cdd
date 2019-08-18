@@ -11,9 +11,9 @@ import lombok.ToString;
 
 @Getter
 @Setter
-public class ContractInfoData<ServiceClass> {
+public class ContractInfoData<ServiceType> {
 
-  private ServiceClass service;
+  private ServiceType service;
   private Object stub;
   private Object returnValue;
   private Class<? extends RuntimeException> exceptionClass;
@@ -21,7 +21,7 @@ public class ContractInfoData<ServiceClass> {
   private Method definingFunction;
   @ToString.Exclude
   @EqualsAndHashCode.Exclude
-  private ContractRunnerData<ServiceClass> suiteData;
+  private ContractRunnerData<ServiceType> suiteData;
   private Class<? extends Object> returnValueContracts;
 
 }
