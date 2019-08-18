@@ -25,7 +25,7 @@ public class TestContractWithAllCases {
 
     contract.returns(
         testData.goodReturnValue
-    )
+    ).when()
         .testedMethod(testData.goodParameter);
   }
 
@@ -37,7 +37,7 @@ public class TestContractWithAllCases {
 
     contract.returns(
         testData.illegalOutputValue
-    )
+    ).when()
         .testedMethod(testData.goodParameter);
   }
 
@@ -50,7 +50,7 @@ public class TestContractWithAllCases {
     contract.throwing(
         Data.exceptionThrown,
         testData.exceptionMessage
-    )
+    ).when()
         .testedMethod(testData.parameterInducingException);
   }
 
@@ -63,7 +63,7 @@ public class TestContractWithAllCases {
     contract.throwing(
         Data.exceptionThrown,
         testData.exceptionMessage
-    )
+    ).when()
         .testedMethod(testData.goodParameter);
   }
 
@@ -76,7 +76,7 @@ public class TestContractWithAllCases {
     contract.throwing(
         Data.exceptionNotThrown,
         testData.exceptionMessage
-    )
+    ).when()
         .testedMethod(testData.parameterInducingException);
   }
 

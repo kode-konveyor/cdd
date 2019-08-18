@@ -22,15 +22,17 @@ public class RunnerDataCreationServiceContract {
   public ContractInfo<RunnerDataCreationServiceImpl<ExampleService>> it;
 
   @Autowired
-  public ContractTestData testData;
+  public ContractTestData contractTestData;
 
   @ContractRule(
     "makeRunnerDataFromTestClass creates the data needed for the runner"
   )
   public void makeRunnerDataFromTestClass_good_values() throws Throwable {
-    it.returns(testData.contractRunnerData)
+    it.returns(contractTestData.contractRunnerData)
+        .withReturnPredicate((self, other) -> (self.getClass() == other.getClass()))
+        .when()
         .makeRunnerDataFromTestClass(
-            testData.contractInstance.getClass()
+            contractTestData.contractInstance.getClass()
         );
   }
 

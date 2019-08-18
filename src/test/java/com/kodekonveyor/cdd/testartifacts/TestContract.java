@@ -16,7 +16,7 @@ public class TestContract {
   public ExampleService service;
 
   @Autowired
-  Data testData;
+  Data contractTestData;
 
   @ContractFactory
   public ContractInfo<ExampleService> it;
@@ -25,13 +25,13 @@ public class TestContract {
   public void contract_passing_return() {
 
     it.returns(
-        testData.goodReturnValue
-    )
-        .testedMethod(testData.goodParameter);
+        contractTestData.goodReturnValue
+    ).when()
+        .testedMethod(contractTestData.goodParameter);
   }
 
   @Override
-  public boolean equals(Object other) {
+  public boolean equals(final Object other) {
     if (other == null)
       return false;
     return other.getClass().equals(this.getClass());

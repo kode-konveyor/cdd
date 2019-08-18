@@ -1,5 +1,6 @@
 package com.kodekonveyor.cdd;
 
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -8,6 +9,7 @@ import com.kodekonveyor.cdd.annotation.ContractRule;
 import com.kodekonveyor.cdd.annotation.Subject;
 import com.kodekonveyor.cdd.build.ChildDescriptionService;
 import com.kodekonveyor.cdd.build.impl.ChildDescriptionServiceImpl;
+import com.kodekonveyor.cdd.run.dto.ContractRunnerData;
 import com.kodekonveyor.cdd.testartifacts.ExampleService;
 import com.kodekonveyor.cdd.testdata.ContractTestData;
 
@@ -20,7 +22,7 @@ public class ChildDescriptionServiceContract {
       ExampleService> childDescriptionServiceImpl;
 
   @Autowired
-  public ContractTestData testData;
+  public ContractTestData contractTestData;
 
   @ContractFactory
   public ContractInfo<ChildDescriptionService<ExampleService>> it;
@@ -30,10 +32,15 @@ public class ChildDescriptionServiceContract {
   )
   public void describeChild_good_values() {
 
-    it.returns(testData.testDescription)
+    final Description testDescription = contractTestData.testDescription;
+    final ContractInfo<ExampleService> contract = contractTestData.contract;
+    final ContractRunnerData<ExampleService> contractRunnerData =
+        contractTestData.contractRunnerData;
+    it.returns(testDescription)
+        .when()
         .describeChild(
-            testData.contract,
-            testData.contractRunnerData
+            contract,
+            contractRunnerData
         );
 
   }

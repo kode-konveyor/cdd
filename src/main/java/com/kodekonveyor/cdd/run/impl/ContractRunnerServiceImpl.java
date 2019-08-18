@@ -4,6 +4,8 @@ import static org.mockito.Mockito.mockingDetails;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.function.BiPredicate;
 
 import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kodekonveyor.cdd.ContractInfo;
+import com.kodekonveyor.cdd.assemble.ContractInfoData;
 import com.kodekonveyor.cdd.build.impl.ChildDescriptionServiceImpl;
 import com.kodekonveyor.cdd.exception.StackTraceSetterService;
 import com.kodekonveyor.cdd.run.ContractRunnerService;
@@ -150,7 +153,7 @@ public class ContractRunnerServiceImpl<ServiceType>
       notifier.fireTestFailure(new Failure(description, exception));
       return;
     }
-    if (!isAnswerEquals(answer, result)) {
+    if (!isAnswerEquals(contract, answer, result)) {
       final Throwable exception = this.stackTraceSetterService
           .changeStackWithMethod(
               new AssertionError(
@@ -168,10 +171,33 @@ public class ContractRunnerServiceImpl<ServiceType>
   }
 
   private boolean
-      isAnswerEquals(final Object returnValue, final Object answer) {
-    if (returnValue == null)
-      return answer == null;
-    return returnValue.equals(answer);
+      isAnswerEquals(
+          final ContractInfo<ServiceType> contract, final Object returnValue,
+          final Object answer
+      ) {
+    final Collection<BiPredicate<Object, Object>> predicates =
+        getPredicates(contract);
+    if (null == predicates) {
+      if (returnValue == null)
+        return answer == null;
+      return returnValue.equals(answer);
+    } else
+      for (final BiPredicate<Object, Object> predicate : predicates)
+        if (!predicate.test(returnValue, answer))
+          return false;
+    return true;
+  }
+
+  private Collection<BiPredicate<Object, Object>>
+      getPredicates(final ContractInfo<ServiceType> contract) {
+    final ContractInfoData<ServiceType> data = contract.getData();
+    if (null == data)
+      return null;
+    final Collection<BiPredicate<Object, Object>> predicates =
+        data.getReturnPredicates();
+    if (predicates.isEmpty())
+      return null;
+    return predicates;
   }
 
 }

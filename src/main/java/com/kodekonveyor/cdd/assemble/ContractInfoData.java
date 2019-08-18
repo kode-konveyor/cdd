@@ -1,6 +1,9 @@
 package com.kodekonveyor.cdd.assemble;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.function.BiPredicate;
 
 import com.kodekonveyor.cdd.run.dto.ContractRunnerData;
 
@@ -23,5 +26,7 @@ public class ContractInfoData<ServiceType> {
   @EqualsAndHashCode.Exclude
   private ContractRunnerData<ServiceType> suiteData;
   private Class<? extends Object> returnValueContracts;
+  private Collection<BiPredicate<Object, Object>> returnPredicates =
+      new ArrayList<>();
 
 }

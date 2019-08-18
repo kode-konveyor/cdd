@@ -15,7 +15,7 @@ public class TestContractNoIT {
   public ExampleService service;
 
   @Autowired
-  Data testData;
+  Data contractTestData;
 
   final public ContractInfo<ExampleService> it = null;
 
@@ -23,9 +23,9 @@ public class TestContractNoIT {
   public void contract_passing_return() {
 
     it.returns(
-        testData.goodReturnValue
-    )
-        .testedMethod(testData.goodParameter);
+        contractTestData.goodReturnValue
+    ).when()
+        .testedMethod(contractTestData.goodParameter);
   }
 
 }
