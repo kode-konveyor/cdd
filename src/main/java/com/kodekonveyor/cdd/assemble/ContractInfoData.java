@@ -26,7 +26,8 @@ public class ContractInfoData<ServiceType> {
   @EqualsAndHashCode.Exclude
   private ContractRunnerData<ServiceType> suiteData;
   private Class<? extends Object> returnValueContracts;
-  private Collection<BiPredicate<Object, Object>> returnPredicates =
-      new ArrayList<>();
+  private Collection<
+      BiPredicate<Object, Object>> returnPredicates =
+          new ArrayList<>();
 
 }

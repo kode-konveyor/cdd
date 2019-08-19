@@ -40,7 +40,9 @@ public class ContractInfo<ServiceType> {
   }
 
   public ContractInfo<ServiceType>
-      withReturnPredicate(final BiPredicate<Object, Object> predicate) {
+      withReturnPredicate(
+          final BiPredicate<Object, Object> predicate
+      ) {
     return this.contractInfoServiceImpl.withReturnPredicate(predicate, this);
   }
 
