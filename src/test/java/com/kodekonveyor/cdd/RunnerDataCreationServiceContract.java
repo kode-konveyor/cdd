@@ -1,10 +1,16 @@
 package com.kodekonveyor.cdd;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.lang.reflect.Method;
+import java.util.Map;
+
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kodekonveyor.cdd.annotation.ContractFactory;
 import com.kodekonveyor.cdd.annotation.ContractRule;
+import com.kodekonveyor.cdd.annotation.ReturnDetail;
 import com.kodekonveyor.cdd.annotation.Subject;
 import com.kodekonveyor.cdd.build.impl.RunnerDataCreationServiceImpl;
 import com.kodekonveyor.cdd.run.dto.ContractRunnerData;
@@ -20,7 +26,7 @@ public class RunnerDataCreationServiceContract {
       ExampleService> runnerDataCreationServiceImpl;
 
   @ContractFactory
-  public ContractInfo<RunnerDataCreationServiceImpl<ExampleService>> it;
+  public ContractInfo<RunnerDataCreationServiceImpl<ExampleService>> it; //NOPMD ShortVariable
 
   @Autowired
   public ContractTestData contractTestData;
@@ -28,37 +34,106 @@ public class RunnerDataCreationServiceContract {
   @ContractRule(
     "makeRunnerDataFromTestClass creates the data needed for the runner"
   )
-  public void makeRunnerDataFromTestClass_good_values() throws Throwable {
+  public void makeRunnerDataFromTestClassCreatesTheDataNeeded()
+      throws Throwable {
     it.returns(contractTestData.contractRunnerData)
-        .withReturnPredicate((self, other) -> contractRunnerDataEquals(self, other))
+        .suchThat(
+            "The test class is the class of the contract",
+            "Return details are recorded",
+            "The contract list contains contract for the tested service",
+            "The suite description is the contract class name",
+            "The service is the Subject of the contract",
+            "The type of the it field is ContractInfo",
+            "The it field is field of the contract",
+            "The test instance is an instance of the contract"
+        )
         .when()
         .makeRunnerDataFromTestClass(
             contractTestData.contractInstance.getClass()
         );
   }
 
-  @SuppressWarnings("unchecked")
-  private boolean contractRunnerDataEquals(
-      final Object self,
-      final Object other
+  @ReturnDetail("The test class is the class of the contract")
+  public void theTestClassIsTheClassOfTheContract(
+      final ContractRunnerData<ExampleService> returnValue
   ) {
-    final ContractRunnerData<ExampleService> returnValue =
-        (ContractRunnerData<ExampleService>) self;
-    System.out.println(returnValue.getTestClass());
-    final ContractRunnerData<ExampleService> otherValue =
-        (ContractRunnerData<ExampleService>) other;
-    System.out.println(otherValue.getTestClass());
+    assertEquals(
+        contractTestData.contractInstance.getClass(), returnValue.getTestClass()
+    );
+  }
 
-    return self.getClass().equals(other.getClass()) &&
-        returnValue.getTestInstance().equals(otherValue.getTestInstance()) &&
-        returnValue.getItField().equals(otherValue.getItField()) &&
+  @ReturnDetail("Return details are recorded")
+  public void returnDetailAreRecorded(
+      final ContractRunnerData<ExampleService> returnValue
+  ) {
+    final Map<String, Method> returnDetails =
+        returnValue.getReturnValueContracts();
+    assertEquals(
+        TestContractTestData.RETURN_DETAIL_FUNCTION_NAME,
+        returnDetails.get(TestContractTestData.RETURN_DEATIL_NAME).getName()
+    );
+  }
+
+  @ReturnDetail(
+    "The contract list contains contract for the tested service"
+  )
+  public void theContractLisContainsContract(
+      final ContractRunnerData<ExampleService> returnValue
+  ) {
+    assertEquals(1, returnValue.getContracts().size());
+    assertEquals(
+        ExampleService.class, returnValue.getContracts().get(0).getService().getClass()
+    );
+  }
+
+  @ReturnDetail("The suite description is the contract class name")
+  public void suiteDescriptionIsTheContractClassName(
+      final ContractRunnerData<ExampleService> returnValue
+  ) {
+    assertEquals(
+        contractTestData.contractInstance.getClass().getName(),
+        returnValue.getSuiteDescription().getDisplayName()
+    );
+  }
+
+  @ReturnDetail("The service is the Subject of the contract")
+  public void theServiceIsExampleService(
+      final ContractRunnerData<ExampleService> returnValue
+  ) {
+    assertEquals(
+        contractTestData.serviceInstance.getClass(),
         returnValue.getServiceInstance().getClass()
-            .equals(otherValue.getServiceInstance().getClass()) &&
-        returnValue.getSuiteDescription()
-            .equals(otherValue.getSuiteDescription()) &&
-        returnValue.getContracts().get(0).getDefiningFunction()
-            .equals(otherValue.getContracts().get(0).getDefiningFunction()) &&
-        returnValue.getTestClass().equals(otherValue.getTestClass());
+    );
+  }
+
+  @ReturnDetail("The type of the it field is ContractInfo")
+  public void itFieldTypeIsContractInfo(
+      final ContractRunnerData<ExampleService> returnValue
+  ) {
+    assertEquals(
+        ContractInfo.class,
+        returnValue.getItField().getType()
+    );
+  }
+
+  @ReturnDetail("The it field is field of the contract")
+  public void itFieldIsFieldOfTheContract(
+      final ContractRunnerData<ExampleService> returnValue
+  ) {
+    assertEquals(
+        contractTestData.contractInstance.getClass(),
+        returnValue.getItField().getDeclaringClass()
+    );
+  }
+
+  @ReturnDetail("The test instance is an instance of the contract")
+  public void instanceClassEquals(
+      final ContractRunnerData<ExampleService> returnValue
+  ) {
+    assertEquals(
+        contractTestData.contractInstance.getClass(),
+        returnValue.getTestInstance().getClass()
+    );
   }
 
 }

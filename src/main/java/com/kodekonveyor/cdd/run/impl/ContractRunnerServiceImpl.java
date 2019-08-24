@@ -4,8 +4,8 @@ import static org.mockito.Mockito.mockingDetails;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.function.BiPredicate;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kodekonveyor.cdd.ContractInfo;
-import com.kodekonveyor.cdd.assemble.ContractInfoData;
 import com.kodekonveyor.cdd.build.impl.ChildDescriptionServiceImpl;
 import com.kodekonveyor.cdd.exception.StackTraceSetterService;
 import com.kodekonveyor.cdd.run.ContractRunnerService;
@@ -153,51 +152,127 @@ public class ContractRunnerServiceImpl<ServiceType>
       notifier.fireTestFailure(new Failure(description, exception));
       return;
     }
-    if (!isAnswerEquals(contract, answer, result)) {
-      final Throwable exception = this.stackTraceSetterService
-          .changeStackWithMethod(
-              new AssertionError(
-                  "Bad return, expected " + answer + " got " + result
-              ), contract.getDefiningFunction()
-          );
-      notifier.fireTestFailure(
-          new Failure(
-              description,
-              exception
-          )
-      );
+    isAnswerEquals(contract, answer, result, notifier, description);
+  }
+
+  private void notifyFailureForBadResult(
+      final ContractInfo<ServiceType> contract, final RunNotifier notifier,
+      final Description description, final Object answer, final Object result
+  ) {
+    final Throwable exception = this.stackTraceSetterService
+        .changeStackWithMethod(
+            new AssertionError(
+                "Bad return, expected " + answer + " got " + result
+            ), contract.getDefiningFunction()
+        );
+    notifier.fireTestFailure(
+        new Failure(
+            description,
+            exception
+        )
+    );
+  }
+
+  private void
+      isAnswerEquals(
+          final ContractInfo<ServiceType> contract, final Object returnValue,
+          final Object answer, final RunNotifier notifier,
+          final Description description
+      ) {
+
+    final List<String> checkedReturnDetails =
+        contract.getCheckedReturnDetails();
+    checkReturnDetails(
+        contract, returnValue, notifier, description, checkedReturnDetails
+    );
+    if (checkedReturnDetails.isEmpty())
+      checkReturnValue(contract, returnValue, answer, notifier, description);
+  }
+
+  private void checkReturnValue(
+      final ContractInfo<ServiceType> contract, final Object returnValue,
+      final Object answer, final RunNotifier notifier,
+      final Description description
+  ) {
+    if (returnValue == null) {
+      if (answer != null)
+        notifyFailureForBadResult(
+            contract, notifier, description, answer, returnValue
+        );
       return;
+    }
+    if (!returnValue.equals(answer))
+      notifyFailureForBadResult(
+          contract, notifier, description, returnValue, answer
+      );
+  }
+
+  private void checkReturnDetails(
+      final ContractInfo<ServiceType> contract, final Object returnValue,
+      final RunNotifier notifier, final Description description,
+      final List<String> checkedReturnDetails
+  ) throws AssertionError {
+    for (final String name : checkedReturnDetails) {
+      final Map<String, Method> returnValueContracts =
+          contract.getSuiteData().getReturnValueContracts();
+      final Method predicate = returnValueContracts.get(name);
+      final Object testInstance = contract.getSuiteData().getTestInstance();
+      if (null == predicate) {
+        notifyNullPredicateFailure(notifier, description, name, testInstance);
+        return;
+      }
+      invokePredicate(
+          returnValue, notifier, description, predicate, testInstance
+      );
     }
   }
 
-  private boolean
-      isAnswerEquals(
-          final ContractInfo<ServiceType> contract, final Object returnValue,
-          final Object answer
-      ) {
-    final Collection<BiPredicate<Object, Object>> predicates =
-        getPredicates(contract);
-    if (null == predicates) {
-      if (returnValue == null)
-        return answer == null;
-      return returnValue.equals(answer);
-    } else
-      for (final BiPredicate<Object, Object> predicate : predicates)
-        if (!predicate.test(returnValue, answer))
-          return false;
-    return true;
+  private void invokePredicate(
+      final Object returnValue, final RunNotifier notifier,
+      final Description description, final Method predicate,
+      final Object testInstance
+  ) throws AssertionError {
+    try {
+      predicate
+          .invoke(testInstance, returnValue);
+    } catch (
+        IllegalAccessException | IllegalArgumentException e
+    ) {
+      throw new AssertionError(e);
+    } catch (final InvocationTargetException e) {
+      final AssertionError exception = new AssertionError(e.getCause());
+      notifyFailure(notifier, description, predicate, exception);
+
+    }
   }
 
-  private Collection<BiPredicate<Object, Object>>
-      getPredicates(final ContractInfo<ServiceType> contract) {
-    final ContractInfoData<ServiceType> data = contract.getData();
-    if (null == data)
-      return null;
-    final Collection<BiPredicate<Object, Object>> predicates =
-        data.getReturnPredicates();
-    if (predicates.isEmpty())
-      return null;
-    return predicates;
+  private void notifyNullPredicateFailure(
+      final RunNotifier notifier, final Description description,
+      final String name, final Object testInstance
+  ) {
+    final AssertionError exception =
+        new AssertionError("no predicate: " + name);
+    stackTraceSetterService
+        .changeStackWithClass(exception, testInstance.getClass());
+    notifier.fireTestFailure(
+        new Failure(
+            description,
+            exception
+        )
+    );
+  }
+
+  private void notifyFailure(
+      final RunNotifier notifier, final Description description,
+      final Method predicate, final AssertionError exception
+  ) {
+    stackTraceSetterService.changeStackWithMethod(exception, predicate);
+    notifier.fireTestFailure(
+        new Failure(
+            description,
+            exception
+        )
+    );
   }
 
 }

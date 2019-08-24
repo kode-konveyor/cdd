@@ -25,12 +25,12 @@ public class ChildDescriptionServiceContract {
   public ContractTestData contractTestData;
 
   @ContractFactory
-  public ContractInfo<ChildDescriptionService<ExampleService>> it;
+  public ContractInfo<ChildDescriptionService<ExampleService>> it; //NOPMD ShortVariable
 
   @ContractRule(
     "describeChild uses the class and method name of the contract to describe a child"
   )
-  public void describeChild_good_values() {
+  public void describeChildGoodValues() {
 
     final Description testDescription = contractTestData.testDescription;
     final ContractInfo<ExampleService> contract = contractTestData.contract;

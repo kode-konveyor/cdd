@@ -6,6 +6,7 @@ import org.junit.runner.Description;
 import org.springframework.stereotype.Service;
 
 import com.kodekonveyor.cdd.ContractInfo;
+import com.kodekonveyor.cdd.TestContractTestData;
 import com.kodekonveyor.cdd.run.dto.ContractRunnerData;
 import com.kodekonveyor.cdd.testartifacts.ExampleService;
 import com.kodekonveyor.cdd.testartifacts.TestContract;
@@ -14,14 +15,14 @@ import com.kodekonveyor.cdd.testartifacts.TestContract;
 public class TestContractRunnerDataCreator {
 
   public ContractRunnerData<ExampleService> createTestContractRunnerData(
-      TestContract contractInstance,
-      List<ContractInfo<ExampleService>> contractList,
-      ExampleService serviceInstance
-  ) {
-    ContractRunnerData<ExampleService> contractRunnerData =
-        new ContractRunnerData<ExampleService>();
+      final TestContract contractInstance,
+      final List<ContractInfo<ExampleService>> contractList,
+      final ExampleService serviceInstance
+  ) throws NoSuchMethodException {
+    final ContractRunnerData<ExampleService> contractRunnerData =
+        new ContractRunnerData<>();
 
-    Class<? extends Object> contractClass =
+    final Class<? extends Object> contractClass =
         contractInstance.getClass();
     contractRunnerData.setTestClass(contractClass);
     contractRunnerData
@@ -29,11 +30,18 @@ public class TestContractRunnerDataCreator {
     contractRunnerData.setTestInstance(contractInstance);
     contractRunnerData.setContracts(contractList);
     contractRunnerData.setServiceInstance(serviceInstance);
+    contractRunnerData.getReturnValueContracts()
+        .put(
+            TestContractTestData.RETURN_DEATIL_NAME,
+            TestContract.class.getMethod(
+                TestContractTestData.RETURN_DETAIL_FUNCTION_NAME, Integer.class
+            )
+        );
     try {
       contractRunnerData.setItField(contractClass.getDeclaredField("it"));
     } catch (NoSuchFieldException | SecurityException e) {
       throw new IllegalArgumentException(
-          "it field cannot be extracted from " + contractClass
+          "it field cannot be extracted from " + contractClass, e
       );
     }
     return contractRunnerData;

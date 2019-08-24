@@ -1,7 +1,5 @@
 package com.kodekonveyor.cdd;
 
-import java.util.function.BiPredicate;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kodekonveyor.cdd.assemble.ContractInfoData;
@@ -40,10 +38,8 @@ public class ContractInfo<ServiceType> {
   }
 
   public ContractInfo<ServiceType>
-      withReturnPredicate(
-          final BiPredicate<Object, Object> predicate
-      ) {
-    return this.contractInfoServiceImpl.withReturnPredicate(predicate, this);
+      suchThat(final String... returnCheckDetails) {
+    return this.contractInfoServiceImpl.suchThat(returnCheckDetails, this);
   }
 
 }

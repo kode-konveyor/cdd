@@ -5,7 +5,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.function.BiPredicate;
+import java.util.Arrays;
 
 import org.springframework.stereotype.Service;
 
@@ -64,13 +64,12 @@ public class ContractInfoServiceImpl<ServiceType>
     return contractInfo;
   }
 
-  public ContractInfo<ServiceType>
-      withReturnPredicate(
-          final BiPredicate<Object, Object> predicate,
-          final ContractInfo<ServiceType> contractInfo
-      ) {
+  public ContractInfo<ServiceType> suchThat(
+      final String[] returnCheckDetails,
+      final ContractInfo<ServiceType> contractInfo
+  ) {
     final ContractInfoData<ServiceType> data = contractInfo.getData();
-    data.getReturnPredicates().add(predicate);
+    data.getCheckedReturnDetails().addAll(Arrays.asList(returnCheckDetails));
     return contractInfo;
   }
 

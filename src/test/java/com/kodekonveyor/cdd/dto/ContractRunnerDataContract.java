@@ -19,7 +19,7 @@ import com.kodekonveyor.cdd.testdata.ContractTestData;
 public class ContractRunnerDataContract {
 
   @ContractFactory
-  public ContractInfo<ContractRunnerData<ExampleService>> it;
+  public ContractInfo<ContractRunnerData<ExampleService>> it; //NOPMD ShortVariable
 
   @Autowired
   public ContractTestData contractTestData;
@@ -28,7 +28,7 @@ public class ContractRunnerDataContract {
   public ContractRunnerData<ExampleService> foo;
 
   @PostConstruct
-  void initialize() {
+  private void initialize() {
     foo = contractTestData.contractRunnerData;
   }
 
@@ -42,18 +42,18 @@ public class ContractRunnerDataContract {
   }
 
   @ContractRule("getTestClass returns the contract class")
-  public void getTestClass() {
+  public void checkGetTestClass() {
     it.returns(contractTestData.contractInstance.getClass()).when()
         .getTestClass();
   }
 
   @ContractRule("getTestInstance returns the test instance")
-  public void getTestInstance() {
+  public void checkGetTestInstance() {
     it.returns(contractTestData.contractInstance).when().getTestInstance();
   }
 
   @ContractRule("getItField returns the It field")
-  public void getItField() throws NoSuchFieldException, SecurityException {
+  public void checkGetItField() throws NoSuchFieldException {
     it.returns(
         contractTestData.contractInstance.getClass().getDeclaredField("it")
     ).when()
@@ -61,14 +61,14 @@ public class ContractRunnerDataContract {
   }
 
   @ContractRule("getServiceInstance returns the service instance")
-  public void getServiceInstance()
-      throws NoSuchFieldException, SecurityException {
+  public void checkGetServiceInstance()
+      throws NoSuchFieldException {
     it.returns(contractTestData.serviceInstance).when()
         .getServiceInstance();
   }
 
   @ContractRule("getContracts returns the contract list")
-  public void getContracts() {
+  public void checkGetContracts() {
     it.returns(contractTestData.contractList).when().getContracts();
   }
 }
