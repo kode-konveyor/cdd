@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kodekonveyor.cdd.ContractInfo;
+import com.kodekonveyor.cdd.TestContractTestData;
+import com.kodekonveyor.cdd.annotation.ContractFactory;
 import com.kodekonveyor.cdd.annotation.ContractRule;
-import com.kodekonveyor.cdd.annotation.Subject;;
+import com.kodekonveyor.cdd.annotation.Subject;
 
 @Service
 public class TestContractNoIT {
@@ -14,18 +16,16 @@ public class TestContractNoIT {
   @Autowired
   public ExampleService service;
 
-  @Autowired
-  Data testData;
-
-  final public ContractInfo<ExampleService> it = null;
+  @ContractFactory
+  public ContractInfo<ExampleService> it; //NOPMD ShortVariable
 
   @ContractRule("a contract with return definition")
-  public void contract_passing_return() {
+  public void contractPassingReturn() {
 
     it.returns(
-        testData.goodReturnValue
-    )
-        .testedMethod(testData.goodParameter);
+        TestContractTestData.GOOD_RETURN_VALUE
+    ).when()
+        .testedMethod(TestContractTestData.GOOD_PARAMETER);
   }
 
 }

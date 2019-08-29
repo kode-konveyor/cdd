@@ -14,6 +14,7 @@ import com.kodekonveyor.cdd.build.ContractCreationService;
 import com.kodekonveyor.cdd.build.impl.ChildDescriptionServiceImpl;
 import com.kodekonveyor.cdd.build.impl.RunnerDataCreationServiceImpl;
 import com.kodekonveyor.cdd.exception.StackTraceSetterService;
+import com.kodekonveyor.cdd.exception.ThrowableTesterInterface;
 import com.kodekonveyor.cdd.exception.impl.StackTraceSetterServiceImpl;
 import com.kodekonveyor.cdd.fields.FieldGetterService;
 import com.kodekonveyor.cdd.testartifacts.ExampleService;
@@ -23,61 +24,67 @@ import com.kodekonveyor.cdd.testartifacts.TestContractNoIT;
 public class RunnerDataServiceExceptionTest {
 
   @InjectMocks
-  RunnerDataCreationServiceImpl<ExampleService> runnerDataService;
+  private RunnerDataCreationServiceImpl<ExampleService> runnerDataService;
 
   @Mock
-  FieldGetterService fieldGetterService;
+  private FieldGetterService fieldGetterService; //NOPMD UnusedPrivateField
 
   @Mock
-  ChildDescriptionServiceImpl<ExampleService> childDescriptionService;
+  private ChildDescriptionServiceImpl<ExampleService> childDescriptionService; //NOPMD UnusedPrivateField
 
   @Mock
-  ContractCreationService<ExampleService> contractCreationService;
+  private ContractCreationService<ExampleService> contractCreationService; //NOPMD UnusedPrivateField
 
   @Mock
   private AutowireCapableBeanFactory beanFactory;
 
   @Mock
-  StackTraceSetterService stackTraceSetterService;
+  private StackTraceSetterService stackTraceSetterService; //NOPMD UnusedPrivateField
 
   @Mock
-  TestContractNoIT testInstance;
+  private TestContractNoIT testInstance;
 
   @Test
   public void throws_an_exception_when_no__field_annotated_as_ContractFactory()
       throws Throwable {
-    doReturn(this.testInstance).when(this.beanFactory)
+    doReturn(testInstance).when(beanFactory)
         .createBean(TestContractNoIT.class);
-    this.runnerDataService
+    runnerDataService
         .setStackTraceSetterService(new StackTraceSetterServiceImpl());
 
     assertThrows(
-        () -> this.runnerDataService
+        () -> runnerDataService
             .makeRunnerDataFromTestClass(TestContractNoIT.class)
     )
         .assertException(AssertionError.class)
         .assertMessageContains(RunnerDataCreationServiceImpl.NO_IT_FIELD)
-        .assertMessageContains(this.testInstance.getClass().getSimpleName())
-        .assertStackClass(0, TestContractNoIT.class.getName());
+        .assertMessageContains(testInstance.getClass().getSimpleName())
+        .assertStackClass(
+            ThrowableTesterInterface.FIRST_FRAME,
+            TestContractNoIT.class.getName()
+        );
   }
 
   @Test
   public void throws_an_exception_when_no_bean_can_be_created()
       throws Throwable {
-    doReturn(null).when(this.beanFactory).createBean(TestContractNoIT.class);
-    this.runnerDataService
+    doReturn(null).when(beanFactory).createBean(TestContractNoIT.class);
+    runnerDataService
         .setStackTraceSetterService(new StackTraceSetterServiceImpl());
 
     assertThrows(
-        () -> this.runnerDataService
+        () -> runnerDataService
             .makeRunnerDataFromTestClass(TestContractNoIT.class)
     )
         .assertException(AssertionError.class)
         .assertMessageContains(RunnerDataCreationServiceImpl.NO_TEST_INSTANCE)
         .assertMessageContains(
-            this.testInstance.getClass().getName().replaceAll("\\$.*", "")
+            testInstance.getClass().getName().replaceAll("\\$.*", "")
         )
-        .assertStackClass(0, TestContractNoIT.class.getName());
+        .assertStackClass(
+            ThrowableTesterInterface.FIRST_FRAME,
+            TestContractNoIT.class.getName()
+        );
   }
 
 }

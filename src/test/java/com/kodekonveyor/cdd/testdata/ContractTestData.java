@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kodekonveyor.cdd.ContractInfo;
+import com.kodekonveyor.cdd.TestContractTestData;
 import com.kodekonveyor.cdd.assemble.ContractInfoFactory;
 import com.kodekonveyor.cdd.build.impl.RunnerDataCreationServiceImpl;
 import com.kodekonveyor.cdd.run.dto.ContractRunnerData;
@@ -22,13 +23,11 @@ public class ContractTestData {
   public RunnerDataCreationServiceImpl<?> runnerDataCreationServiceImpl;
 
   @Autowired
-  ContractInfoFactory<ExampleService> contractInfoFactory;
+  private ContractInfoFactory<ExampleService> contractInfoFactory;
 
   @Autowired
-  TestContractRunnerDataCreator testContractRunnerDataCreator =
+  private final TestContractRunnerDataCreator testContractRunnerDataCreator =
       new TestContractRunnerDataCreator();
-  public final static String CONTRACT_PASSING_RETURN =
-      "contract_passing_return";
 
   public ExampleService serviceInstance = new ExampleService();
 
@@ -37,7 +36,7 @@ public class ContractTestData {
   public Description testDescription = Description
       .createTestDescription(
           TestContract.class,
-          CONTRACT_PASSING_RETURN
+          TestContractTestData.CONTRACT_PASSING_RETURN
       );
 
   public ContractInfo<ExampleService> contract;
@@ -47,11 +46,10 @@ public class ContractTestData {
   public ContractRunnerData<ExampleService> contractRunnerData;
 
   public ContractRunnerData<ExampleService> contractRunnerDataEmpy =
-      new ContractRunnerData<ExampleService>();
+      new ContractRunnerData<>();
 
   @PostConstruct
-  void initialize() throws NoSuchMethodException, SecurityException {
-
+  public void initialize() throws NoSuchMethodException {
     contract = contractInfoFactory.getObject();
     contract.setService(serviceInstance);
 
@@ -63,7 +61,7 @@ public class ContractTestData {
         );
     contract.setDefiningFunction(
         contractInstance.getClass()
-            .getMethod(CONTRACT_PASSING_RETURN)
+            .getMethod(TestContractTestData.CONTRACT_PASSING_RETURN)
     );
 
   }

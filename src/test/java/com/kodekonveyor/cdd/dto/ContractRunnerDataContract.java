@@ -19,52 +19,56 @@ import com.kodekonveyor.cdd.testdata.ContractTestData;
 public class ContractRunnerDataContract {
 
   @ContractFactory
-  public ContractInfo<ContractRunnerData<ExampleService>> it;
+  public ContractInfo<ContractRunnerData<ExampleService>> it; //NOPMD ShortVariable
 
   @Autowired
-  public ContractTestData testData;
+  public ContractTestData contractTestData;
 
   @Subject
   public ContractRunnerData<ExampleService> foo;
 
   @PostConstruct
-  void initialize() {
-    foo = testData.contractRunnerData;
+  private void initialize() {
+    foo = contractTestData.contractRunnerData;
   }
 
   @ContractRule("getSuiteDescription returns the suite description")
   public void suiteDescription() {
     it.returns(
-        Description.createSuiteDescription(testData.contractInstance.getClass())
-    )
+        Description
+            .createSuiteDescription(contractTestData.contractInstance.getClass())
+    ).when()
         .getSuiteDescription();
   }
 
   @ContractRule("getTestClass returns the contract class")
-  public void getTestClass() {
-    it.returns(testData.contractInstance.getClass()).getTestClass();
+  public void checkGetTestClass() {
+    it.returns(contractTestData.contractInstance.getClass()).when()
+        .getTestClass();
   }
 
   @ContractRule("getTestInstance returns the test instance")
-  public void getTestInstance() {
-    it.returns(testData.contractInstance).getTestInstance();
+  public void checkGetTestInstance() {
+    it.returns(contractTestData.contractInstance).when().getTestInstance();
   }
 
   @ContractRule("getItField returns the It field")
-  public void getItField() throws NoSuchFieldException, SecurityException {
-    it.returns(testData.contractInstance.getClass().getDeclaredField("it"))
+  public void checkGetItField() throws NoSuchFieldException {
+    it.returns(
+        contractTestData.contractInstance.getClass().getDeclaredField("it")
+    ).when()
         .getItField();
   }
 
   @ContractRule("getServiceInstance returns the service instance")
-  public void getServiceInstance()
-      throws NoSuchFieldException, SecurityException {
-    it.returns(testData.serviceInstance)
+  public void checkGetServiceInstance()
+      throws NoSuchFieldException {
+    it.returns(contractTestData.serviceInstance).when()
         .getServiceInstance();
   }
 
   @ContractRule("getContracts returns the contract list")
-  public void getContracts() {
-    it.returns(testData.contractList).getContracts();
+  public void checkGetContracts() {
+    it.returns(contractTestData.contractList).when().getContracts();
   }
 }

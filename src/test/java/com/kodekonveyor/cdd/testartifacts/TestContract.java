@@ -1,11 +1,15 @@
 package com.kodekonveyor.cdd.testartifacts;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.kodekonveyor.cdd.ContractInfo;
+import com.kodekonveyor.cdd.TestContractTestData;
 import com.kodekonveyor.cdd.annotation.ContractFactory;
 import com.kodekonveyor.cdd.annotation.ContractRule;
+import com.kodekonveyor.cdd.annotation.ReturnDetail;
 import com.kodekonveyor.cdd.annotation.Subject;
 
 @Service
@@ -15,30 +19,24 @@ public class TestContract {
   @Autowired
   public ExampleService service;
 
-  @Autowired
-  Data testData;
-
   @ContractFactory
-  public ContractInfo<ExampleService> it;
+  public ContractInfo<ExampleService> it; //NOPMD ShortVariable
 
   @ContractRule("a contract with return definition")
-  public void contract_passing_return() {
+  public void contractPassingReturn() {
 
     it.returns(
-        testData.goodReturnValue
-    )
-        .testedMethod(testData.goodParameter);
+        TestContractTestData.GOOD_RETURN_VALUE
+    ).when()
+        .testedMethod(TestContractTestData.GOOD_PARAMETER);
   }
 
-  @Override
-  public boolean equals(Object other) {
-    if (other == null)
-      return false;
-    return other.getClass().equals(this.getClass());
+  public void methodWithParameter(final Object foo) {
   }
 
-  @Override
-  public int hashCode() {
-    return this.getClass().getName().hashCode();
+  @ReturnDetail("Returns 42")
+  public void returnDetailPredicate(final Integer returnValue) {
+    assertEquals((Integer) 43, returnValue);
   }
+
 }

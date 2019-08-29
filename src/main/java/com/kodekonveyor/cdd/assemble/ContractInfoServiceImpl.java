@@ -5,6 +5,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 
 import org.springframework.stereotype.Service;
 
@@ -15,8 +16,7 @@ public class ContractInfoServiceImpl<ServiceType>
     implements ContractInfoService<ServiceType> {
 
   @Override
-  @SuppressWarnings("unchecked")
-  public ServiceType returns(
+  public ContractInfo<ServiceType> returns(
       final Object returnValue, final ContractInfo<ServiceType> contractInfo
   ) {
     final ContractInfoData<ServiceType> data = contractInfo.getData();
@@ -24,12 +24,20 @@ public class ContractInfoServiceImpl<ServiceType>
     data.setStub(
         doReturn(returnValue).when(mock(data.getService().getClass()))
     );
+    return contractInfo;
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public ServiceType when(
+      final ContractInfo<ServiceType> contractInfo
+  ) {
+    final ContractInfoData<ServiceType> data = contractInfo.getData();
     return (ServiceType) data.getStub();
   }
 
   @Override
-  @SuppressWarnings("unchecked")
-  public ServiceType throwing(
+  public ContractInfo<ServiceType> throwing(
       final Class<? extends RuntimeException> exceptionClass,
       final String exceptionMessage,
       final ContractInfo<ServiceType> contractInfo
@@ -53,7 +61,17 @@ public class ContractInfoServiceImpl<ServiceType>
     ) {
       throw new AssertionError("cannot stub", e);
     }
-    return (ServiceType) data.getStub();
+    return contractInfo;
+  }
+
+  @Override
+  public ContractInfo<ServiceType> suchThat(
+      final String[] returnCheckDetails,
+      final ContractInfo<ServiceType> contractInfo
+  ) {
+    final ContractInfoData<ServiceType> data = contractInfo.getData();
+    data.getReturnDetailChecks().addAll(Arrays.asList(returnCheckDetails));
+    return contractInfo;
   }
 
 }

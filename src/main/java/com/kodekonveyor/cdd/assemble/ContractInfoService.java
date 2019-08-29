@@ -4,13 +4,19 @@ import com.kodekonveyor.cdd.ContractInfo;
 
 public interface ContractInfoService<ServiceType> {
 
-  ServiceType returns(
+  ContractInfo<ServiceType> returns(
       Object returnValue, ContractInfo<ServiceType> contractInfo
   );
 
-  ServiceType throwing(
+  ContractInfo<ServiceType> throwing(
       Class<? extends RuntimeException> exceptionClass,
       String exceptionMessage, ContractInfo<ServiceType> contractInfo
+  );
+
+  ServiceType when(ContractInfo<ServiceType> contractInfo);
+
+  ContractInfo<ServiceType> suchThat(
+      String[] returnCheckDetails, ContractInfo<ServiceType> contractInfo
   );
 
 }

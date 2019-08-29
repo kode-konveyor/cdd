@@ -2,6 +2,8 @@ package com.kodekonveyor.cdd.exception;
 
 public interface ThrowableTesterInterface {
 
+  int FIRST_FRAME = 0;
+
   ThrowableTesterInterface assertMessageIs(String message);
 
   ThrowableTesterInterface
