@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
@@ -197,14 +198,10 @@ public class ContractRunnerServiceImpl<ServiceType>
       final Object answer, final RunNotifier notifier,
       final Description description
   ) {
-    if (returnValue == null) {
-      if (answer == null)
-        return;
-    } else if (returnValue.equals(answer))
-      return;
-    notifyFailureForBadResult(
-        contract, notifier, description, answer, returnValue
-    );
+    if (!Optional.ofNullable(returnValue).equals(Optional.ofNullable(answer)))
+      notifyFailureForBadResult(
+          contract, notifier, description, answer, returnValue
+      );
   }
 
   private void checkReturnDetails(
