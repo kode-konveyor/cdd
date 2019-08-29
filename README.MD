@@ -22,7 +22,7 @@ It can be argued that this approach is not actually contract-driven: we are not 
 In other words we are not defining the contract formally and fully, just pinning it along representative data points.
 So maybe the name is not correct. If you have a better name, just tell us.
 
-Existing tools for contract driven development therefore do not concentrate on testing; they either concentrate on 
+Existing tools for contract driven development do not concentrate on testing; they either concentrate on 
 * formal verification; this makes testing unnecessary, but needs very involved work
 * run-time verification; as a way to augment formal verification with a less resource-intensive way for less critical parts of the software, and protect the critical parts against forbidden inputs.
 
