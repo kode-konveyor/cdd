@@ -16,6 +16,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.kodekonveyor.cdd.assemble.ContractInfoFactory;
 import com.kodekonveyor.cdd.build.impl.ContractCreationServiceImpl;
+import com.kodekonveyor.cdd.exception.ThrowableTesterInterface;
 import com.kodekonveyor.cdd.run.dto.ContractRunnerData;
 import com.kodekonveyor.cdd.testartifacts.ExampleService;
 import com.kodekonveyor.cdd.testartifacts.TestContract;
@@ -75,10 +76,22 @@ public class ContractCreationServiceErrorCasesTest {
             )
     )
         .assertException(AssertionError.class)
-        .assertStackFileName(0, TestContractTestData.CLASS_FILE_NAME)
-        .assertStackClass(0, TestContractTestData.FULL_CLASSNAME)
-        .assertStackLineNumber(0, TestContractTestData.METHOD_LINE_NUMBER)
-        .assertStackMethod(0, TestContractTestData.CONTRACT_PASSING_RETURN)
+        .assertStackFileName(
+            ThrowableTesterInterface.FIRST_FRAME,
+            TestContractTestData.CLASS_FILE_NAME
+        )
+        .assertStackClass(
+            ThrowableTesterInterface.FIRST_FRAME,
+            TestContractTestData.FULL_CLASSNAME
+        )
+        .assertStackLineNumber(
+            ThrowableTesterInterface.FIRST_FRAME,
+            TestContractTestData.METHOD_LINE_NUMBER
+        )
+        .assertStackMethod(
+            ThrowableTesterInterface.FIRST_FRAME,
+            TestContractTestData.CONTRACT_PASSING_RETURN
+        )
         .assertMessageMatches(TestContractTestData.CAN_NOT_SET_FIELD_MESSAGE);
 
   }
@@ -108,10 +121,22 @@ public class ContractCreationServiceErrorCasesTest {
             )
     )
         .assertException(IllegalArgumentException.class)
-        .assertStackFileName(0, TestContractTestData.CLASS_FILE_NAME)
-        .assertStackClass(0, TestContractTestData.FULL_CLASSNAME)
-        .assertStackLineNumber(0, TestContractTestData.METHOD_LINE_NUMBER)
-        .assertStackMethod(0, TestContractTestData.CONTRACT_PASSING_RETURN)
+        .assertStackFileName(
+            ThrowableTesterInterface.FIRST_FRAME,
+            TestContractTestData.CLASS_FILE_NAME
+        )
+        .assertStackClass(
+            ThrowableTesterInterface.FIRST_FRAME,
+            TestContractTestData.FULL_CLASSNAME
+        )
+        .assertStackLineNumber(
+            ThrowableTesterInterface.FIRST_FRAME,
+            TestContractTestData.METHOD_LINE_NUMBER
+        )
+        .assertStackMethod(
+            ThrowableTesterInterface.FIRST_FRAME,
+            TestContractTestData.CONTRACT_PASSING_RETURN
+        )
         .assertMessageIs(message);
 
   }
@@ -138,10 +163,22 @@ public class ContractCreationServiceErrorCasesTest {
             )
     )
         .assertException(AssertionError.class)
-        .assertStackFileName(0, TestContractTestData.CLASS_FILE_NAME)
-        .assertStackClass(0, TestContractTestData.FULL_CLASSNAME)
-        .assertStackLineNumber(0, TestContractTestData.METHOD_LINENUMBER)
-        .assertStackMethod(0, TestContractTestData.METHOD_NAME)
+        .assertStackFileName(
+            ThrowableTesterInterface.FIRST_FRAME,
+            TestContractTestData.CLASS_FILE_NAME
+        )
+        .assertStackClass(
+            ThrowableTesterInterface.FIRST_FRAME,
+            TestContractTestData.FULL_CLASSNAME
+        )
+        .assertStackLineNumber(
+            ThrowableTesterInterface.FIRST_FRAME,
+            TestContractTestData.METHOD_LINENUMBER
+        )
+        .assertStackMethod(
+            ThrowableTesterInterface.FIRST_FRAME,
+            TestContractTestData.METHOD_NAME
+        )
         .assertMessageIs(
             TestContractTestData.WRONG_PARAMETERS_MESSAGE
         );
@@ -158,10 +195,22 @@ public class ContractCreationServiceErrorCasesTest {
             )
     ).showStackTrace()
         .assertException(AssertionError.class)
-        .assertStackFileName(0, TestContractTestData.CLASS_FILE_NAME)
-        .assertStackClass(0, TestContractTestData.FULL_CLASSNAME)
-        .assertStackLineNumber(0, TestContractTestData.METHOD_LINE_NUMBER)
-        .assertStackMethod(0, TestContractTestData.CONTRACT_PASSING_RETURN)
+        .assertStackFileName(
+            ThrowableTesterInterface.FIRST_FRAME,
+            TestContractTestData.CLASS_FILE_NAME
+        )
+        .assertStackClass(
+            ThrowableTesterInterface.FIRST_FRAME,
+            TestContractTestData.FULL_CLASSNAME
+        )
+        .assertStackLineNumber(
+            ThrowableTesterInterface.FIRST_FRAME,
+            TestContractTestData.METHOD_LINE_NUMBER
+        )
+        .assertStackMethod(
+            ThrowableTesterInterface.FIRST_FRAME,
+            TestContractTestData.CONTRACT_PASSING_RETURN
+        )
         .assertMessageIs(ContractCreationServiceImpl.NO_IT_FIELD);
   }
 

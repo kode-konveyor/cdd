@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.kodekonveyor.cdd.annotation.Context;
+import com.kodekonveyor.cdd.exception.ThrowableTesterInterface;
 import com.kodekonveyor.cdd.exception.impl.StackTraceSetterServiceImpl;
 import com.kodekonveyor.cdd.fields.impl.FieldGetterServiceImpl;
 import com.kodekonveyor.cdd.testartifacts.TestContract;
@@ -42,7 +43,9 @@ public class FieldGetterServiceTest {
     )
         .assertException(IllegalArgumentException.class)
         .assertMessageIs("Annotation not found: @Context")
-        .assertStackClass(0, this.getClass().getName());
+        .assertStackClass(
+            ThrowableTesterInterface.FIRST_FRAME, this.getClass().getName()
+        );
   }
 
 }

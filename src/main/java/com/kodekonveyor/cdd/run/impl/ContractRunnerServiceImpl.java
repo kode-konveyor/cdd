@@ -4,6 +4,7 @@ import static org.mockito.Mockito.mockingDetails;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -68,8 +69,10 @@ public class ContractRunnerServiceImpl<ServiceType>
     try {
       throwingInvocation.callRealMethod();
       final AssertionError originalException = new AssertionError(
-          "Expected " + contract.getExceptionClass().getSimpleName() +
-              ", but no exception thrown"
+          MessageFormat.format(
+              "Expected {0}, but no exception thrown",
+              contract.getExceptionClass().getSimpleName()
+          )
       );
       final Throwable exception = this.stackTraceSetterService
           .changeStackWithMethod(
@@ -181,7 +184,7 @@ public class ContractRunnerServiceImpl<ServiceType>
       ) {
 
     final List<String> checkedReturnDetails =
-        contract.getCheckedReturnDetails();
+        contract.getReturnDetailChecks();
     checkReturnDetails(
         contract, returnValue, notifier, description, checkedReturnDetails
     );
@@ -195,16 +198,13 @@ public class ContractRunnerServiceImpl<ServiceType>
       final Description description
   ) {
     if (returnValue == null) {
-      if (answer != null)
-        notifyFailureForBadResult(
-            contract, notifier, description, answer, returnValue
-        );
+      if (answer == null)
+        return;
+    } else if (returnValue.equals(answer))
       return;
-    }
-    if (!returnValue.equals(answer))
-      notifyFailureForBadResult(
-          contract, notifier, description, returnValue, answer
-      );
+    notifyFailureForBadResult(
+        contract, notifier, description, answer, returnValue
+    );
   }
 
   private void checkReturnDetails(

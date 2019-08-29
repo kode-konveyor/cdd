@@ -64,12 +64,13 @@ public class ContractInfoServiceImpl<ServiceType>
     return contractInfo;
   }
 
+  @Override
   public ContractInfo<ServiceType> suchThat(
       final String[] returnCheckDetails,
       final ContractInfo<ServiceType> contractInfo
   ) {
     final ContractInfoData<ServiceType> data = contractInfo.getData();
-    data.getCheckedReturnDetails().addAll(Arrays.asList(returnCheckDetails));
+    data.getReturnDetailChecks().addAll(Arrays.asList(returnCheckDetails));
     return contractInfo;
   }
 
