@@ -11,6 +11,26 @@
 	<description>A Contract Driven Development framework</description>
 	<url>http://github.com/kode-konveyor/cdd</url>
 
+	<licenses>
+		<license>
+			<name>GNU GPL v3 or any later</name>
+			<url>https://www.gnu.org/licenses/gpl-3.0.en.html</url>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<name>Kode Konveyor OU</name>
+			<email>info@kodekonveyor.com</email>
+			<organization>Kode Konveyor OU</organization>
+			<organizationUrl>https://kodekonveyor.com</organizationUrl>
+		</developer>
+	</developers>
+	<scm>
+		<connection>scm:git:git://github.com/kode-konveyor/cdd.git</connection>
+		<developerConnection>scm:git:ssh://github.com:kode-konveyor/cdd.git</developerConnection>
+		<url>http://github.com/kode-konveyor/cdd/tree/master</url>
+	</scm>
+
 	<properties>
 		<sonar.github.repository>kode-konveyor/cdd</sonar.github.repository>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
