@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.kodekonveyor.cdd.ContractInfo;
 import com.kodekonveyor.cdd.annotation.ContractFactory;
 import com.kodekonveyor.cdd.annotation.ContractRule;
+import com.kodekonveyor.cdd.annotation.ReturnDetail;
 import com.kodekonveyor.cdd.annotation.Subject;
 import com.kodekonveyor.cdd.build.ChildDescriptionService;
 import com.kodekonveyor.cdd.build.ContractCreationService;
@@ -64,20 +65,34 @@ public class RunnerDataCreationServiceImpl<ServiceType>
   ) throws Throwable {
     final ContractRunnerData<ServiceType> data = new ContractRunnerData<>();
     data.setTestClass(testClass);
-    final Object testInstance = this.beanFactory.createBean(testClass);
+    final Object testInstance = beanFactory.createBean(testClass);
     checktestInstance(testClass, testInstance);
 
     setServiceInstance(data, testInstance);
     data.setTestInstance(testInstance);
-    final Field itField = this.fieldGetterService
+    final Field itField = fieldGetterService
         .getFieldWithAnnotation(ContractFactory.class, testInstance);
     checkItField(testInstance, itField);
     data.setItField(itField);
+    registerReturnDetails(testInstance, data);
     makeSubjectField(testInstance);
     data.setContracts(createContracts(data));
     data.setSuiteDescription(Description.createSuiteDescription(testClass));
     registerTestCases(data);
     return data;
+  }
+
+  private void registerReturnDetails(
+      final Object testInstance, final ContractRunnerData<ServiceType> data
+  ) {
+    for (final Method method : testInstance.getClass().getMethods()) {
+      final ReturnDetail[] annotations =
+          method.getAnnotationsByType(ReturnDetail.class);
+      if (annotations.length > 0) {
+        final String description = annotations[0].value();
+        data.getReturnValueContracts().put(description, method);
+      }
+    }
   }
 
   private void checkItField(final Object testInstance, final Field itField)

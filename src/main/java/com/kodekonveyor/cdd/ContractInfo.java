@@ -21,16 +21,25 @@ public class ContractInfo<ServiceType> {
     this.data = new ContractInfoData<>();//FIXME
   }
 
-  public ServiceType returns(final Object returnValue) {
+  public ContractInfo<ServiceType> returns(final Object returnValue) {
     return this.contractInfoServiceImpl.returns(returnValue, this);
   }
 
-  public ServiceType throwing(
+  public ContractInfo<ServiceType> throwing(
       final Class<? extends RuntimeException> exceptionClass,
       final String exceptionMessage
   ) {
     return this.contractInfoServiceImpl
         .throwing(exceptionClass, exceptionMessage, this);
+  }
+
+  public ServiceType when() {
+    return this.contractInfoServiceImpl.when(this);
+  }
+
+  public ContractInfo<ServiceType>
+      suchThat(final String... returnCheckDetails) {
+    return this.contractInfoServiceImpl.suchThat(returnCheckDetails, this);
   }
 
 }

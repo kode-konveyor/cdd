@@ -19,7 +19,6 @@ import com.kodekonveyor.cdd.build.impl.ContractCreationServiceImpl;
 import com.kodekonveyor.cdd.run.dto.ContractRunnerData;
 import com.kodekonveyor.cdd.testartifacts.ExampleService;
 import com.kodekonveyor.cdd.testartifacts.TestContract;
-import com.kodekonveyor.cdd.testdata.ContractTestData;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ContractCreationServiceTest {
@@ -51,7 +50,8 @@ public class ContractCreationServiceTest {
   @Before
   public void setUp() throws Throwable {
     contractMethod =
-        TestContract.class.getMethod(ContractTestData.CONTRACT_PASSING_RETURN);
+        TestContract.class
+            .getMethod(TestContractTestData.CONTRACT_PASSING_RETURN);
 
     when(contractInfoFactory.getObject())
         .thenReturn(contract);
@@ -102,7 +102,7 @@ public class ContractCreationServiceTest {
 
   @Test
   public void calls_the_method_in_the_method_parameter() {
-    verify(contractInstance).contract_passing_return();
+    verify(contractInstance).contractPassingReturn();
   }
 
 }

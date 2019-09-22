@@ -24,7 +24,7 @@ public class FieldGetterServiceTest {
   public FieldGetterServiceImpl fieldGetterServiceImpl;
 
   @Mock
-  StackTraceSetterServiceImpl stackTraceSetterService;
+  private StackTraceSetterServiceImpl stackTraceSetterService;
 
   @Mock
   private TestContract contractInstance;

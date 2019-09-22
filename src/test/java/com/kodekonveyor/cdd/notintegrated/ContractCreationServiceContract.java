@@ -3,14 +3,12 @@ package com.kodekonveyor.cdd.notintegrated;
 import static org.mockito.Mockito.verify;
 
 import org.mockito.InjectMocks;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kodekonveyor.cdd.ContractInfo;
 import com.kodekonveyor.cdd.annotation.Context;
 import com.kodekonveyor.cdd.annotation.ContractFactory;
 import com.kodekonveyor.cdd.annotation.ContractRule;
 import com.kodekonveyor.cdd.annotation.Subject;
-import com.kodekonveyor.cdd.assemble.ContractInfoFactory;
 import com.kodekonveyor.cdd.build.impl.ContractCreationServiceImpl;
 import com.kodekonveyor.cdd.dto.ContractJunitTestData;
 import com.kodekonveyor.cdd.testartifacts.ExampleService;
@@ -22,9 +20,6 @@ import com.kodekonveyor.cdd.testartifacts.ExampleService;
 })
 public class ContractCreationServiceContract {
 
-  @Autowired
-  ContractInfoFactory<ExampleService> contractInfoFactory;
-
   @Subject
   @InjectMocks
   public ContractCreationServiceImpl<
@@ -32,7 +27,7 @@ public class ContractCreationServiceContract {
 
   @ContractFactory
   public ContractInfo<ContractCreationServiceImpl<
-      ExampleService>> it;
+      ExampleService>> it; //NOPMD ShortVariable
 
   @Context
   public ContractJunitTestData testData = new ContractJunitTestData();
@@ -40,41 +35,20 @@ public class ContractCreationServiceContract {
   @ContractRule(
     "createContract creates contract based on the method in contract"
   )
-  //@Test
-  public void createContract() throws NoSuchMethodException, SecurityException,
+  public void createContract() throws NoSuchMethodException,
       AssertionError, Throwable {
-
-    /*
-      ContractInfo<ExampleService> contract = mock(ContractInfo.class);
-      // return value can be defined
-      // * with a mock like above and the where clause below,
-      // * with the rules set up in the context, or
-      // * as a concrete value
-      it.returns(contract)
-        .where(
-           on(contract).setSuiteData(testData.contractRunnerData),
-           on(contract).setDefiningFunction(ContractJunitTestData.CONTRACT_PASSING_RETURN)
-         )
-        .when(contractCreationServiceImpl)
-        .createContract(
-           testData.contracts,
-            testData.contractMethod, testData.contractRunnerData
-        )
-        .withSideEffect(on(testData.contracts).add(testData.contract))
-     */
-    ContractInfo<ExampleService> contract = contractCreationServiceImpl
+    contractCreationServiceImpl
         .createContract(
             testData.contracts,
             testData.contractMethod, testData.contractRunnerData
         );
 
-    verifyReturnValue(contract, testData.contract);
+    verifyReturnValue(testData.contract);
     verify(testData.contracts).add(testData.contract);
   }
 
   private void verifyReturnValue(
-      ContractInfo<ExampleService> contract,
-      ContractInfo<ExampleService> contractMock
+      final ContractInfo<ExampleService> contractMock
   ) {
     verify(contractMock).setSuiteData(testData.contractRunnerData);
     verify(contractMock)

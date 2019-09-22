@@ -1,6 +1,8 @@
 package com.kodekonveyor.cdd.assemble;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.kodekonveyor.cdd.run.dto.ContractRunnerData;
 
@@ -22,6 +24,6 @@ public class ContractInfoData<ServiceType> {
   @ToString.Exclude
   @EqualsAndHashCode.Exclude
   private ContractRunnerData<ServiceType> suiteData;
-  private Class<? extends Object> returnValueContracts;
+  private List<String> checkedReturnDetails = new ArrayList<>();
 
 }
