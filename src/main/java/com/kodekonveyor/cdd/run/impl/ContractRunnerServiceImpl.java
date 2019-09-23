@@ -187,7 +187,8 @@ public class ContractRunnerServiceImpl<ServiceType>
     final List<String> checkedReturnDetails =
         contract.getCheckedReturnDetails();
     checkReturnDetails(
-        contract, returnValue, notifier, description, checkedReturnDetails
+        contract, returnValue, notifier, description, checkedReturnDetails,
+        answer
     );
     if (checkedReturnDetails.isEmpty())
       checkReturnValue(contract, returnValue, answer, notifier, description);
@@ -207,7 +208,7 @@ public class ContractRunnerServiceImpl<ServiceType>
   private void checkReturnDetails(
       final ContractInfo<ServiceType> contract, final Object returnValue,
       final RunNotifier notifier, final Description description,
-      final List<String> checkedReturnDetails
+      final List<String> checkedReturnDetails, final Object answer
   ) throws AssertionError {
     for (final String name : checkedReturnDetails) {
       final Map<String, Method> returnValueContracts =
@@ -222,65 +223,6 @@ public class ContractRunnerServiceImpl<ServiceType>
           returnValue, notifier, description, predicate, testInstance
       );
     }
-    if (!returnValue.equals(answer))
-      notifyFailureForBadResult(
-          contract, notifier, description, returnValue, answer
-      );
-  }
-
-  private void checkReturnDetails(
-      final ContractInfo<ServiceType> contract, final Object returnValue,
-      final RunNotifier notifier, final Description description,
-      final List<String> checkedReturnDetails
-  ) throws AssertionError {
-    for (final String name : checkedReturnDetails) {
-      final Map<String, Method> returnValueContracts =
-          contract.getSuiteData().getReturnValueContracts();
-      final Method predicate = returnValueContracts.get(name);
-      final Object testInstance = contract.getSuiteData().getTestInstance();
-      if (null == predicate) {
-        notifyNullPredicateFailure(notifier, description, name, testInstance);
-        return;
-      }
-      invokePredicate(
-          returnValue, notifier, description, predicate, testInstance
-      );
-    }
-  }
-
-  private void invokePredicate(
-      final Object returnValue, final RunNotifier notifier,
-      final Description description, final Method predicate,
-      final Object testInstance
-  ) throws AssertionError {
-    try {
-      predicate
-          .invoke(testInstance, returnValue);
-    } catch (
-        IllegalAccessException | IllegalArgumentException e
-    ) {
-      throw new AssertionError(e);
-    } catch (final InvocationTargetException e) {
-      final AssertionError exception = new AssertionError(e.getCause());
-      notifyFailure(notifier, description, predicate, exception);
-
-    }
-  }
-
-  private void notifyNullPredicateFailure(
-      final RunNotifier notifier, final Description description,
-      final String name, final Object testInstance
-  ) {
-    final AssertionError exception =
-        new AssertionError("no predicate: " + name);
-    stackTraceSetterService
-        .changeStackWithClass(exception, testInstance.getClass());
-    notifier.fireTestFailure(
-        new Failure(
-            description,
-            exception
-        )
-    );
   }
 
   private void invokePredicate(
