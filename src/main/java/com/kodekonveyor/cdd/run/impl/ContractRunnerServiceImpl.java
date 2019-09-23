@@ -4,8 +4,10 @@ import static org.mockito.Mockito.mockingDetails;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
@@ -68,8 +70,10 @@ public class ContractRunnerServiceImpl<ServiceType>
     try {
       throwingInvocation.callRealMethod();
       final AssertionError originalException = new AssertionError(
-          "Expected " + contract.getExceptionClass().getSimpleName() +
-              ", but no exception thrown"
+          MessageFormat.format(
+              "Expected {0}, but no exception thrown",
+              contract.getExceptionClass().getSimpleName()
+          )
       );
       final Throwable exception = this.stackTraceSetterService
           .changeStackWithMethod(
@@ -183,7 +187,8 @@ public class ContractRunnerServiceImpl<ServiceType>
     final List<String> checkedReturnDetails =
         contract.getCheckedReturnDetails();
     checkReturnDetails(
-        contract, returnValue, notifier, description, checkedReturnDetails
+        contract, returnValue, notifier, description, checkedReturnDetails,
+        answer
     );
     if (checkedReturnDetails.isEmpty())
       checkReturnValue(contract, returnValue, answer, notifier, description);
@@ -194,23 +199,16 @@ public class ContractRunnerServiceImpl<ServiceType>
       final Object answer, final RunNotifier notifier,
       final Description description
   ) {
-    if (returnValue == null) {
-      if (answer != null)
-        notifyFailureForBadResult(
-            contract, notifier, description, answer, returnValue
-        );
-      return;
-    }
-    if (!returnValue.equals(answer))
+    if (!Optional.ofNullable(returnValue).equals(Optional.ofNullable(answer)))
       notifyFailureForBadResult(
-          contract, notifier, description, returnValue, answer
+          contract, notifier, description, answer, returnValue
       );
   }
 
   private void checkReturnDetails(
       final ContractInfo<ServiceType> contract, final Object returnValue,
       final RunNotifier notifier, final Description description,
-      final List<String> checkedReturnDetails
+      final List<String> checkedReturnDetails, final Object answer
   ) throws AssertionError {
     for (final String name : checkedReturnDetails) {
       final Map<String, Method> returnValueContracts =
