@@ -13,12 +13,12 @@ public class ThrowableTester extends ThrowableStackTester
   @Override
   public ThrowableTesterInterface
       assertException(final Class<? extends Throwable> klass) {
-    return this.throwableTesterService.assertException(klass, this);
+    return throwableTesterService.assertException(klass, this);
   }
 
   @Override
   public ThrowableTesterInterface assertUnimplemented(final Thrower thrower) {
-    return this.throwableTesterService.assertUnimplemented(thrower, this);
+    return throwableTesterService.assertUnimplemented(thrower, this);
   }
 
 }

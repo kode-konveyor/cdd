@@ -14,6 +14,7 @@ import com.kodekonveyor.cdd.build.ContractCreationService;
 import com.kodekonveyor.cdd.build.impl.ChildDescriptionServiceImpl;
 import com.kodekonveyor.cdd.build.impl.RunnerDataCreationServiceImpl;
 import com.kodekonveyor.cdd.exception.StackTraceSetterService;
+import com.kodekonveyor.cdd.exception.ThrowableTesterInterface;
 import com.kodekonveyor.cdd.exception.impl.StackTraceSetterServiceImpl;
 import com.kodekonveyor.cdd.fields.FieldGetterService;
 import com.kodekonveyor.cdd.testartifacts.ExampleService;
@@ -58,7 +59,10 @@ public class RunnerDataServiceExceptionTest {
         .assertException(AssertionError.class)
         .assertMessageContains(RunnerDataCreationServiceImpl.NO_IT_FIELD)
         .assertMessageContains(testInstance.getClass().getSimpleName())
-        .assertStackClass(0, TestContractNoIT.class.getName());
+        .assertStackClass(
+            ThrowableTesterInterface.FIRST_FRAME,
+            TestContractNoIT.class.getName()
+        );
   }
 
   @Test
@@ -77,7 +81,10 @@ public class RunnerDataServiceExceptionTest {
         .assertMessageContains(
             testInstance.getClass().getName().replaceAll("\\$.*", "")
         )
-        .assertStackClass(0, TestContractNoIT.class.getName());
+        .assertStackClass(
+            ThrowableTesterInterface.FIRST_FRAME,
+            TestContractNoIT.class.getName()
+        );
   }
 
 }

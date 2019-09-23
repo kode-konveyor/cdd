@@ -64,6 +64,7 @@ public class ContractInfoServiceImpl<ServiceType>
     return contractInfo;
   }
 
+  @Override
   public ContractInfo<ServiceType> suchThat(
       final String[] returnCheckDetails,
       final ContractInfo<ServiceType> contractInfo

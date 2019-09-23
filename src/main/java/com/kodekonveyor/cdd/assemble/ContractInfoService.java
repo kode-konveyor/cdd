@@ -15,4 +15,8 @@ public interface ContractInfoService<ServiceType> {
 
   ServiceType when(ContractInfo<ServiceType> contractInfo);
 
+  ContractInfo<ServiceType> suchThat(
+      String[] returnCheckDetails, ContractInfo<ServiceType> contractInfo
+  );
+
 }

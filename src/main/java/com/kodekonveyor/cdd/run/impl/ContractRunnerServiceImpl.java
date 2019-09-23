@@ -4,8 +4,10 @@ import static org.mockito.Mockito.mockingDetails;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.runner.Description;
 import org.junit.runner.notification.Failure;
@@ -68,8 +70,10 @@ public class ContractRunnerServiceImpl<ServiceType>
     try {
       throwingInvocation.callRealMethod();
       final AssertionError originalException = new AssertionError(
-          "Expected " + contract.getExceptionClass().getSimpleName() +
-              ", but no exception thrown"
+          MessageFormat.format(
+              "Expected {0}, but no exception thrown",
+              contract.getExceptionClass().getSimpleName()
+          )
       );
       final Throwable exception = this.stackTraceSetterService
           .changeStackWithMethod(
@@ -194,12 +198,29 @@ public class ContractRunnerServiceImpl<ServiceType>
       final Object answer, final RunNotifier notifier,
       final Description description
   ) {
-    if (returnValue == null) {
-      if (answer != null)
-        notifyFailureForBadResult(
-            contract, notifier, description, answer, returnValue
-        );
-      return;
+    if (!Optional.ofNullable(returnValue).equals(Optional.ofNullable(answer)))
+      notifyFailureForBadResult(
+          contract, notifier, description, answer, returnValue
+      );
+  }
+
+  private void checkReturnDetails(
+      final ContractInfo<ServiceType> contract, final Object returnValue,
+      final RunNotifier notifier, final Description description,
+      final List<String> checkedReturnDetails
+  ) throws AssertionError {
+    for (final String name : checkedReturnDetails) {
+      final Map<String, Method> returnValueContracts =
+          contract.getSuiteData().getReturnValueContracts();
+      final Method predicate = returnValueContracts.get(name);
+      final Object testInstance = contract.getSuiteData().getTestInstance();
+      if (null == predicate) {
+        notifyNullPredicateFailure(notifier, description, name, testInstance);
+        return;
+      }
+      invokePredicate(
+          returnValue, notifier, description, predicate, testInstance
+      );
     }
     if (!returnValue.equals(answer))
       notifyFailureForBadResult(
@@ -225,6 +246,41 @@ public class ContractRunnerServiceImpl<ServiceType>
           returnValue, notifier, description, predicate, testInstance
       );
     }
+  }
+
+  private void invokePredicate(
+      final Object returnValue, final RunNotifier notifier,
+      final Description description, final Method predicate,
+      final Object testInstance
+  ) throws AssertionError {
+    try {
+      predicate
+          .invoke(testInstance, returnValue);
+    } catch (
+        IllegalAccessException | IllegalArgumentException e
+    ) {
+      throw new AssertionError(e);
+    } catch (final InvocationTargetException e) {
+      final AssertionError exception = new AssertionError(e.getCause());
+      notifyFailure(notifier, description, predicate, exception);
+
+    }
+  }
+
+  private void notifyNullPredicateFailure(
+      final RunNotifier notifier, final Description description,
+      final String name, final Object testInstance
+  ) {
+    final AssertionError exception =
+        new AssertionError("no predicate: " + name);
+    stackTraceSetterService
+        .changeStackWithClass(exception, testInstance.getClass());
+    notifier.fireTestFailure(
+        new Failure(
+            description,
+            exception
+        )
+    );
   }
 
   private void invokePredicate(
