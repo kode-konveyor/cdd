@@ -187,8 +187,7 @@ public class ContractRunnerServiceImpl<ServiceType>
     final List<String> checkedReturnDetails =
         contract.getCheckedReturnDetails();
     checkReturnDetails(
-        contract, returnValue, notifier, description, checkedReturnDetails,
-        answer
+        contract, returnValue, notifier, description, checkedReturnDetails
     );
     if (checkedReturnDetails.isEmpty())
       checkReturnValue(contract, returnValue, answer, notifier, description);
@@ -208,7 +207,7 @@ public class ContractRunnerServiceImpl<ServiceType>
   private void checkReturnDetails(
       final ContractInfo<ServiceType> contract, final Object returnValue,
       final RunNotifier notifier, final Description description,
-      final List<String> checkedReturnDetails, final Object answer
+      final List<String> checkedReturnDetails
   ) throws AssertionError {
     for (final String name : checkedReturnDetails) {
       final Map<String, Method> returnValueContracts =

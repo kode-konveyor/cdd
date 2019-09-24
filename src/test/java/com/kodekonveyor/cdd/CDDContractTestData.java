@@ -222,7 +222,6 @@ public class CDDContractTestData {//NOPMD ClassNamingConventions
     contract.setStub(stub);
     contract.setSuiteData(CDDContractTestData.DATA);
     contract.setCheckedReturnDetails(
-    contract.setReturnDetailChecks(
         List.of(TestContractTestData.RETURN_DEATIL_NAME)
     );
     final Map<String, Method> returnDetails =
