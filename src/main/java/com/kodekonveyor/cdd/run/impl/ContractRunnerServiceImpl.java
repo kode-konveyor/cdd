@@ -208,11 +208,7 @@ public class ContractRunnerServiceImpl<ServiceType>
   private void checkReturnDetails(
       final ContractInfo<ServiceType> contract, final Object returnValue,
       final RunNotifier notifier, final Description description,
-<<<<<<< HEAD
       final List<String> checkedReturnDetails, final Object answer
-=======
-      final List<String> checkedReturnDetails
->>>>>>> master
   ) throws AssertionError {
     for (final String name : checkedReturnDetails) {
       final Map<String, Method> returnValueContracts =
