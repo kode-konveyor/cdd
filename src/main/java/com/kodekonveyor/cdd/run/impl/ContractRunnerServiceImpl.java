@@ -185,7 +185,7 @@ public class ContractRunnerServiceImpl<ServiceType>
       ) {
 
     final List<String> checkedReturnDetails =
-        contract.getReturnDetailChecks();
+        contract.getCheckedReturnDetails();
     checkReturnDetails(
         contract, returnValue, notifier, description, checkedReturnDetails
     );

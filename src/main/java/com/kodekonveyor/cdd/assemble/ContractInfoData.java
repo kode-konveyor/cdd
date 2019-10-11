@@ -24,6 +24,6 @@ public class ContractInfoData<ServiceType> {
   @ToString.Exclude
   @EqualsAndHashCode.Exclude
   private ContractRunnerData<ServiceType> suiteData;
-  private List<String> returnDetailChecks = new ArrayList<>();
+  private List<String> checkedReturnDetails = new ArrayList<>();
 
 }

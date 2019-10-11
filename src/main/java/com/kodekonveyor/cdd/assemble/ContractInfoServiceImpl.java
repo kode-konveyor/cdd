@@ -70,7 +70,7 @@ public class ContractInfoServiceImpl<ServiceType>
       final ContractInfo<ServiceType> contractInfo
   ) {
     final ContractInfoData<ServiceType> data = contractInfo.getData();
-    data.getReturnDetailChecks().addAll(Arrays.asList(returnCheckDetails));
+    data.getCheckedReturnDetails().addAll(Arrays.asList(returnCheckDetails));
     return contractInfo;
   }
 
