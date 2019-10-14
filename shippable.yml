@@ -5,7 +5,9 @@ python:
 integrations:
   generic:
     - integrationName: kkpipeline
-
+  key:
+    - integrationName: kodekonveyor
+      type: sshKey
 
 build:
   cache: true
