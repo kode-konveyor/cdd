@@ -28,7 +28,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Service
-public class RunnerDataCreationServiceImpl<ServiceType>
+public class RunnerDataCreationServiceImpl<ServiceType> //NOPMD https://trello.com/c/ZjIgEwHw/907-discuss-refactor-of-big-service
     implements RunnerDataCreationService<ServiceType> {
 
   public static final String NO_TEST_INSTANCE = "NO TEST INSTANCE of ";
