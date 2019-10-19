@@ -20,3 +20,6 @@
 /reportProperties.xml
 /shippable/
 /zentaworkaround
+cdd.interfaces
+cdd.stubs
+cdd.testdata

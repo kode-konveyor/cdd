@@ -28,7 +28,7 @@ public class ContractRunnerDataContract {
   public ContractRunnerData<ExampleService> foo;
 
   @PostConstruct
-  private void initialize() {
+  private void initialize() {//NOPMD
     foo = contractTestData.contractRunnerData;
   }
 
