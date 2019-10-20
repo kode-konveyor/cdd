@@ -6,7 +6,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.kodekonveyor</groupId>
 	<artifactId>cdd</artifactId>
-	<version>0.0.1-feature_mergemaster2.18d995a</version>
+	<version>0.0.1-feature_new_toolchain.ec65c44</version>
 	<name>Test-time contracts</name>
 	<description>A Contract Driven Development framework</description>
 	<url>http://github.com/kode-konveyor/cdd</url>

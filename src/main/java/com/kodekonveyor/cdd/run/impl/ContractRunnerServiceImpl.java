@@ -26,8 +26,8 @@ import com.kodekonveyor.cdd.run.dto.ContractRunnerData;
 import lombok.Setter;
 
 @Service
-public class ContractRunnerServiceImpl<ServiceType>
-    implements ContractRunnerService<ServiceType> {
+public class ContractRunnerServiceImpl<ServiceType> //NOPMD https://trello.com/c/ZjIgEwHw/907-discuss-refactor-of-big-service
+    implements ContractRunnerService<ServiceType> { //NOPMD same
 
   @Autowired
   private ChildDescriptionServiceImpl<ServiceType> childDescriptionService;
